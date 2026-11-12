@@ -1,0 +1,1810 @@
+{
+  "schemaVersion": 2,
+  "source": "ROOTFALL v0.1 (this file is the source of truth; originally exported from reference/index.html v7.0)",
+  "notes": {
+    "answers": "Accepted answers. Compare after normalizing: uppercase, strip whitespace and quotes (' \" `).",
+    "difficulties": "time = total seconds per run; skipCost = seconds lost when skipping a question (unlocked after hint).",
+    "timerAlerts": "Alerts at 60% / 40% / 20% of total time remaining; heartbeat tick during the last 20%.",
+    "penalties": "wrongAnswer = seconds lost per wrong stage answer; masterKey = seconds lost per wrong master key."
+  },
+  "difficulties": {
+    "KOLAY": {
+      "time": 60,
+      "skipCost": 10
+    },
+    "ORTA": {
+      "time": 75,
+      "skipCost": 15
+    },
+    "ZOR": {
+      "time": 90,
+      "skipCost": 20
+    }
+  },
+  "penalties": {
+    "wrongAnswer": 3,
+    "masterKey": 5
+  },
+  "keyWords": [
+    "ZERO",
+    "NEO",
+    "NEXUS",
+    "CYBER",
+    "GHOST",
+    "PULSE",
+    "PHANTOM",
+    "SHADOW",
+    "VORTEX",
+    "ACCESS",
+    "SIGNAL",
+    "PACKET",
+    "VECTOR",
+    "MATRIX",
+    "UPLINK",
+    "CIPHER",
+    "SECTOR",
+    "QUANTUM",
+    "TOKEN",
+    "KERNEL",
+    "DAEMON",
+    "BEACON",
+    "OVERRIDE",
+    "POINTER",
+    "STREAM",
+    "RESOLVE",
+    "BINARY",
+    "FIREWALL"
+  ],
+  "categories": [
+    {
+      "id": "CR",
+      "icon": "🔐",
+      "title": "KRİPTANALİZ",
+      "inputPlaceholder": "Deşifre edilen kelimeyi yazınız...",
+      "questions": {
+        "KOLAY": [
+          {
+            "id": "CR-E1",
+            "text": "Atbash şifreli kelime: X L W V",
+            "answers": [
+              "CODE"
+            ],
+            "hint": "Her harfin tablodaki karşılığını bulup sırayla birleştir.",
+            "guide": [
+              "[*] REHBER: ATBASH — alfabe tersine çevrilmiştir (ilk harf ↔ son harf)",
+              "A↔Z | B↔Y | C↔X | D↔W | E↔V | F↔U | G↔T | H↔S | I↔R",
+              "J↔Q | K↔P | L↔O | M↔N | O↔L | P↔K | Q↔J | R↔I | S↔H",
+              "T↔G | U↔F | V↔E | W↔D | X↔C | Y↔B | Z↔A"
+            ]
+          },
+          {
+            "id": "CR-E2",
+            "text": "Atbash şifreli kelime: S Z X P",
+            "answers": [
+              "HACK"
+            ],
+            "hint": "İlk harften başla: tablodaki eşini bul, sonra sıradaki harfe geç.",
+            "guide": [
+              "[*] REHBER: ATBASH — alfabe tersine çevrilmiştir (ilk harf ↔ son harf)",
+              "A↔Z | B↔Y | C↔X | D↔W | E↔V | F↔U | G↔T | H↔S | I↔R",
+              "J↔Q | K↔P | L↔O | M↔N | O↔L | P↔K | Q↔J | R↔I | S↔H",
+              "T↔G | U↔F | V↔E | W↔D | X↔C | Y↔B | Z↔A"
+            ]
+          },
+          {
+            "id": "CR-E3",
+            "text": "Atbash şifreli kelime: I L L G",
+            "answers": [
+              "ROOT"
+            ],
+            "hint": "Tabloda iki yönlü eşleşme var; her harfi tek tek çevir.",
+            "guide": [
+              "[*] REHBER: ATBASH — alfabe tersine çevrilmiştir (ilk harf ↔ son harf)",
+              "A↔Z | B↔Y | C↔X | D↔W | E↔V | F↔U | G↔T | H↔S | I↔R",
+              "J↔Q | K↔P | L↔O | M↔N | O↔L | P↔K | Q↔J | R↔I | S↔H",
+              "T↔G | U↔F | V↔E | W↔D | X↔C | Y↔B | Z↔A"
+            ]
+          },
+          {
+            "id": "CR-E4",
+            "text": "Atbash şifreli kelime: Y B G V",
+            "answers": [
+              "BYTE"
+            ],
+            "hint": "Alfabenin başı ile sonu birbirinin eşidir; ortaya doğru ilerler.",
+            "guide": [
+              "[*] REHBER: ATBASH — alfabe tersine çevrilmiştir (ilk harf ↔ son harf)",
+              "A↔Z | B↔Y | C↔X | D↔W | E↔V | F↔U | G↔T | H↔S | I↔R",
+              "J↔Q | K↔P | L↔O | M↔N | O↔L | P↔K | Q↔J | R↔I | S↔H",
+              "T↔G | U↔F | V↔E | W↔D | X↔C | Y↔B | Z↔A"
+            ]
+          },
+          {
+            "id": "CR-E5",
+            "text": "Atbash şifreli kelime: O L X P",
+            "answers": [
+              "LOCK"
+            ],
+            "hint": "Her harfi tablodan tek tek çevir; 4 harfli bir güvenlik kelimesi.",
+            "guide": [
+              "[*] REHBER: ATBASH — alfabe tersine çevrilmiştir (ilk harf ↔ son harf)",
+              "A↔Z | B↔Y | C↔X | D↔W | E↔V | F↔U | G↔T | H↔S | I↔R",
+              "J↔Q | K↔P | L↔O | M↔N | O↔L | P↔K | Q↔J | R↔I | S↔H",
+              "T↔G | U↔F | V↔E | W↔D | X↔C | Y↔B | Z↔A"
+            ]
+          },
+          {
+            "id": "CR-E6",
+            "text": "Atbash şifreli kelime: W Z G Z",
+            "answers": [
+              "DATA"
+            ],
+            "hint": "Her harfi tablodan çevir; 2. ve 4. harf aynı.",
+            "guide": [
+              "[*] REHBER: ATBASH — alfabe tersine çevrilmiştir (ilk harf ↔ son harf)",
+              "A↔Z | B↔Y | C↔X | D↔W | E↔V | F↔U | G↔T | H↔S | I↔R",
+              "J↔Q | K↔P | L↔O | M↔N | O↔L | P↔K | Q↔J | R↔I | S↔H",
+              "T↔G | U↔F | V↔E | W↔D | X↔C | Y↔B | Z↔A"
+            ]
+          },
+          {
+            "id": "CR-E7",
+            "text": "Atbash şifreli kelime: F H V I",
+            "answers": [
+              "USER"
+            ],
+            "hint": "Her harfi tablodan çevir; sisteme giriş yapan kişi.",
+            "guide": [
+              "[*] REHBER: ATBASH — alfabe tersine çevrilmiştir (ilk harf ↔ son harf)",
+              "A↔Z | B↔Y | C↔X | D↔W | E↔V | F↔U | G↔T | H↔S | I↔R",
+              "J↔Q | K↔P | L↔O | M↔N | O↔L | P↔K | Q↔J | R↔I | S↔H",
+              "T↔G | U↔F | V↔E | W↔D | X↔C | Y↔B | Z↔A"
+            ]
+          }
+        ],
+        "ORTA": [
+          {
+            "id": "CR-M1",
+            "text": "Ayna şifreli kelime: D R O W S S A P",
+            "answers": [
+              "PASSWORD"
+            ],
+            "hint": "Harfleri son harften başlayarak geriye doğru oku.",
+            "guide": [
+              "[*] REHBER: AYNA ŞİFRESİ — harfler sağdan sola dizilmiştir",
+              "Örnek mantık: K C A T S  ➔  S-T-A-C-K"
+            ]
+          },
+          {
+            "id": "CR-M2",
+            "text": "Ayna şifreli kelime: L E N N U T",
+            "answers": [
+              "TUNNEL"
+            ],
+            "hint": "En sondaki harf kelimenin ilk harfidir.",
+            "guide": [
+              "[*] REHBER: AYNA ŞİFRESİ — harfler sağdan sola dizilmiştir",
+              "Örnek mantık: K C A T S  ➔  S-T-A-C-K"
+            ]
+          },
+          {
+            "id": "CR-M3",
+            "text": "Atbash şifreli kelime: K I L C B",
+            "answers": [
+              "PROXY"
+            ],
+            "hint": "Her harfi tablodan çevir; 5 harfli bir ağ terimi çıkacak.",
+            "guide": [
+              "[*] REHBER: ATBASH — alfabe tersine çevrilmiştir (ilk harf ↔ son harf)",
+              "A↔Z | B↔Y | C↔X | D↔W | E↔V | F↔U | G↔T | H↔S | I↔R",
+              "J↔Q | K↔P | L↔O | M↔N | O↔L | P↔K | Q↔J | R↔I | S↔H",
+              "T↔G | U↔F | V↔E | W↔D | X↔C | Y↔B | Z↔A"
+            ]
+          },
+          {
+            "id": "CR-M4",
+            "text": "Atbash şifreli kelime: H V I E V I",
+            "answers": [
+              "SERVER"
+            ],
+            "hint": "Her harfi tablodan çevir; 6 harfli bir bilişim terimi çıkacak.",
+            "guide": [
+              "[*] REHBER: ATBASH — alfabe tersine çevrilmiştir (ilk harf ↔ son harf)",
+              "A↔Z | B↔Y | C↔X | D↔W | E↔V | F↔U | G↔T | H↔S | I↔R",
+              "J↔Q | K↔P | L↔O | M↔N | O↔L | P↔K | Q↔J | R↔I | S↔H",
+              "T↔G | U↔F | V↔E | W↔D | X↔C | Y↔B | Z↔A"
+            ]
+          },
+          {
+            "id": "CR-M5",
+            "text": "Ayna şifreli kelime: Y T I R U C E S",
+            "answers": [
+              "SECURITY"
+            ],
+            "hint": "Son harften başlayıp geriye doğru oku.",
+            "guide": [
+              "[*] REHBER: AYNA ŞİFRESİ — harfler sağdan sola dizilmiştir",
+              "Örnek mantık: K C A T S  ➔  S-T-A-C-K"
+            ]
+          },
+          {
+            "id": "CR-M6",
+            "text": "Ayna şifreli kelime: E R A W L A M",
+            "answers": [
+              "MALWARE"
+            ],
+            "hint": "Son harften başlayıp geriye doğru oku; zararlı yazılım.",
+            "guide": [
+              "[*] REHBER: AYNA ŞİFRESİ — harfler sağdan sola dizilmiştir",
+              "Örnek mantık: K C A T S  ➔  S-T-A-C-K"
+            ]
+          },
+          {
+            "id": "CR-M7",
+            "text": "Atbash şifreli kelime: Z W N R M",
+            "answers": [
+              "ADMIN"
+            ],
+            "hint": "Her harfi tablodan çevir; sistem yöneticisi.",
+            "guide": [
+              "[*] REHBER: ATBASH — alfabe tersine çevrilmiştir (ilk harf ↔ son harf)",
+              "A↔Z | B↔Y | C↔X | D↔W | E↔V | F↔U | G↔T | H↔S | I↔R",
+              "J↔Q | K↔P | L↔O | M↔N | O↔L | P↔K | Q↔J | R↔I | S↔H",
+              "T↔G | U↔F | V↔E | W↔D | X↔C | Y↔B | Z↔A"
+            ]
+          }
+        ],
+        "ZOR": [
+          {
+            "id": "CR-H1",
+            "text": "Sezar (+3) şifreli kelime: K H O O R",
+            "answers": [
+              "HELLO"
+            ],
+            "hint": "Her harfi 3 adım geriye al.",
+            "guide": [
+              "[*] REHBER: SEZAR +3 — her harf alfabede 3 adım ileri kaydırılmıştır",
+              "Çözmek için her harfi 3 adım GERİ al (A'dan öncesi Z'ye döner).",
+              "Örnek (+3): G harfi D'nin şifreli halidir."
+            ]
+          },
+          {
+            "id": "CR-H2",
+            "text": "Sezar (+5) şifreli kelime: G N S F W D",
+            "answers": [
+              "BINARY"
+            ],
+            "hint": "Her harfi 5 adım geriye al; baştaki harflere dikkat.",
+            "guide": [
+              "[*] REHBER: SEZAR +5 — her harf alfabede 5 adım ileri kaydırılmıştır",
+              "Çözmek için her harfi 5 adım GERİ al (A'dan öncesi Z'ye döner).",
+              "Örnek (+5): I harfi D'nin şifreli halidir."
+            ]
+          },
+          {
+            "id": "CR-H3",
+            "text": "Sezar (+4) şifreli kelime: J M V I A E P P",
+            "answers": [
+              "FIREWALL"
+            ],
+            "hint": "Her harfi 4 adım geriye al; 8 harfli bir güvenlik terimi.",
+            "guide": [
+              "[*] REHBER: SEZAR +4 — her harf alfabede 4 adım ileri kaydırılmıştır",
+              "Çözmek için her harfi 4 adım GERİ al (A'dan öncesi Z'ye döner).",
+              "Örnek (+4): H harfi D'nin şifreli halidir."
+            ]
+          },
+          {
+            "id": "CR-H4",
+            "text": "Sezar (+7) şifreli kelime: U L A D V Y R",
+            "answers": [
+              "NETWORK"
+            ],
+            "hint": "Her harfi 7 adım geriye al; A'nın gerisinde Z'ye dönebilirsin.",
+            "guide": [
+              "[*] REHBER: SEZAR +7 — her harf alfabede 7 adım ileri kaydırılmıştır",
+              "Çözmek için her harfi 7 adım GERİ al (A'dan öncesi Z'ye döner).",
+              "Örnek (+7): K harfi D'nin şifreli halidir."
+            ]
+          },
+          {
+            "id": "CR-H5",
+            "text": "Sezar (+3) şifreli kelime: S B W K R Q",
+            "answers": [
+              "PYTHON"
+            ],
+            "hint": "Her harfi 3 adım geri al; 6 harfli bir programlama dili.",
+            "guide": [
+              "[*] REHBER: SEZAR +3 — her harf alfabede 3 adım ileri kaydırılmıştır",
+              "Çözmek için her harfi 3 adım GERİ al (A'dan öncesi Z'ye döner).",
+              "Örnek (+3): G harfi D'nin şifreli halidir."
+            ]
+          },
+          {
+            "id": "CR-H6",
+            "text": "Sezar (+2) şifreli kelime: U Q E M G V",
+            "answers": [
+              "SOCKET"
+            ],
+            "hint": "Her harfi 2 adım geri al; ağ programlama terimi.",
+            "guide": [
+              "[*] REHBER: SEZAR +2 — her harf alfabede 2 adım ileri kaydırılmıştır",
+              "Çözmek için her harfi 2 adım GERİ al (A'dan öncesi Z'ye döner).",
+              "Örnek (+2): F harfi D'nin şifreli halidir."
+            ]
+          },
+          {
+            "id": "CR-H7",
+            "text": "Sezar (+6) şifreli kelime: R O T A D",
+            "answers": [
+              "LINUX"
+            ],
+            "hint": "Her harfi 6 adım geri al; açık kaynak işletim sistemi.",
+            "guide": [
+              "[*] REHBER: SEZAR +6 — her harf alfabede 6 adım ileri kaydırılmıştır",
+              "Çözmek için her harfi 6 adım GERİ al (A'dan öncesi Z'ye döner).",
+              "Örnek (+6): J harfi D'nin şifreli halidir."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "NS",
+      "icon": "🔢",
+      "title": "SAYI SİSTEMLERİ",
+      "inputPlaceholder": "Sonucu giriniz...",
+      "questions": {
+        "KOLAY": [
+          {
+            "id": "NS-E1",
+            "text": "0100 + 0011 = ?  (onluk veya ikilik yazabilirsin)",
+            "answers": [
+              "7",
+              "0111",
+              "111"
+            ],
+            "hint": "Önce ikilik sayıları onluğa çevir, sonra topla.",
+            "guide": [
+              "[*] REHBER: İKİLİK (BINARY) BASAMAK DÜZENİ",
+              "AĞIRLIKLAR: [ 8 - 4 - 2 - 1 ]   Örnek: 0110 = 4 + 2 = 6  |  1001 = 8 + 1 = 9"
+            ]
+          },
+          {
+            "id": "NS-E2",
+            "text": "1010 ikilik sayısı onluk sistemde kaçtır?",
+            "answers": [
+              "10"
+            ],
+            "hint": "1 olan basamakların ağırlıklarını topla.",
+            "guide": [
+              "[*] REHBER: İKİLİK (BINARY) BASAMAK DÜZENİ",
+              "AĞIRLIKLAR: [ 8 - 4 - 2 - 1 ]   Örnek: 0110 = 4 + 2 = 6  |  1001 = 8 + 1 = 9"
+            ]
+          },
+          {
+            "id": "NS-E3",
+            "text": "8 bitlik veri bloğu kaç Byte eder?",
+            "answers": [
+              "1",
+              "1BYTE",
+              "1BAYT"
+            ],
+            "hint": "Temel veri birimi bit ile byte arasındaki oranı düşün.",
+            "guide": [
+              "[*] REHBER: VERİ BİRİMLERİ",
+              "bit < Byte < KB < MB — her birim bir öncekinin katıdır."
+            ]
+          },
+          {
+            "id": "NS-E4",
+            "text": "13 onluk sayısının 4 bitlik ikilik karşılığı nedir?",
+            "answers": [
+              "1101"
+            ],
+            "hint": "Toplamı 13 yapan 8-4-2-1 ağırlıklarına 1, diğerlerine 0 yaz.",
+            "guide": [
+              "[*] REHBER: İKİLİK (BINARY) BASAMAK DÜZENİ",
+              "AĞIRLIKLAR: [ 8 - 4 - 2 - 1 ]   Örnek: 0110 = 4 + 2 = 6  |  1001 = 8 + 1 = 9"
+            ]
+          },
+          {
+            "id": "NS-E5",
+            "text": "0110 ikilik sayısı onluk sistemde kaçtır?",
+            "answers": [
+              "6"
+            ],
+            "hint": "1 olan basamakların ağırlıklarını topla.",
+            "guide": [
+              "[*] REHBER: İKİLİK (BINARY) BASAMAK DÜZENİ",
+              "AĞIRLIKLAR: [ 8 - 4 - 2 - 1 ]   Örnek: 0110 = 4 + 2 = 6  |  1001 = 8 + 1 = 9"
+            ]
+          },
+          {
+            "id": "NS-E6",
+            "text": "1 Byte kaç bit eder?",
+            "answers": [
+              "8"
+            ],
+            "hint": "Byte, bitlerden oluşan temel veri birimidir; 2'nin bir kuvveti.",
+            "guide": [
+              "[*] REHBER: VERİ BİRİMLERİ",
+              "bit < Byte < KB < MB — her birim bir öncekinin katıdır."
+            ]
+          },
+          {
+            "id": "NS-E7",
+            "text": "0001 + 0010 = ?  (onluk veya ikilik yazabilirsin)",
+            "answers": [
+              "3",
+              "0011",
+              "11"
+            ],
+            "hint": "Önce iki sayıyı onluğa çevir, sonra topla.",
+            "guide": [
+              "[*] REHBER: İKİLİK (BINARY) BASAMAK DÜZENİ",
+              "AĞIRLIKLAR: [ 8 - 4 - 2 - 1 ]   Örnek: 0110 = 4 + 2 = 6  |  1001 = 8 + 1 = 9"
+            ]
+          }
+        ],
+        "ORTA": [
+          {
+            "id": "NS-M1",
+            "text": "0x0F hexadecimal değeri onluk olarak kaçtır?",
+            "answers": [
+              "15"
+            ],
+            "hint": "Hex cetvelinde F harfinin değerini bul.",
+            "guide": [
+              "[*] REHBER: HEXADECIMAL (16'LIK TABAN)",
+              "0-9 standart, A=10, B=11, C=12, D=13, E=14, F=15   |   0x1B = 1×16 + 11"
+            ]
+          },
+          {
+            "id": "NS-M2",
+            "text": "1000 + 0101 = ?  (onluk veya ikilik yazabilirsin)",
+            "answers": [
+              "13",
+              "1101"
+            ],
+            "hint": "İkilik sayıları onluğa çevirip topla veya basamak basamak topla.",
+            "guide": [
+              "[*] REHBER: İKİLİK (BINARY) BASAMAK DÜZENİ",
+              "AĞIRLIKLAR: [ 8 - 4 - 2 - 1 ]   Örnek: 0110 = 4 + 2 = 6  |  1001 = 8 + 1 = 9"
+            ]
+          },
+          {
+            "id": "NS-M3",
+            "text": "5 onluk sayısının 4 bitlik ikilik karşılığı nedir?",
+            "answers": [
+              "0101",
+              "101"
+            ],
+            "hint": "Toplamı 5 yapan basamaklara 1, diğerlerine 0 yaz.",
+            "guide": [
+              "[*] REHBER: İKİLİK (BINARY) BASAMAK DÜZENİ",
+              "AĞIRLIKLAR: [ 8 - 4 - 2 - 1 ]   Örnek: 0110 = 4 + 2 = 6  |  1001 = 8 + 1 = 9"
+            ]
+          },
+          {
+            "id": "NS-M4",
+            "text": "0x1A hexadecimal değeri onluk olarak kaçtır?",
+            "answers": [
+              "26"
+            ],
+            "hint": "Soldaki basamak 16 ile, sağdaki basamak 1 ile çarpılır.",
+            "guide": [
+              "[*] REHBER: HEXADECIMAL (16'LIK TABAN)",
+              "0-9 standart, A=10, B=11, C=12, D=13, E=14, F=15   |   0x1B = 1×16 + 11"
+            ]
+          },
+          {
+            "id": "NS-M5",
+            "text": "0x14 hexadecimal değeri onluk olarak kaçtır?",
+            "answers": [
+              "20"
+            ],
+            "hint": "Soldaki basamak 16 ile, sağdaki basamak 1 ile çarpılır.",
+            "guide": [
+              "[*] REHBER: HEXADECIMAL (16'LIK TABAN)",
+              "0-9 standart, A=10, B=11, C=12, D=13, E=14, F=15   |   0x1B = 1×16 + 11"
+            ]
+          },
+          {
+            "id": "NS-M6",
+            "text": "11 onluk sayısının 4 bitlik ikilik karşılığı nedir?",
+            "answers": [
+              "1011"
+            ],
+            "hint": "Toplamı 11 yapan 8-4-2-1 ağırlıklarına 1, diğerlerine 0 yaz.",
+            "guide": [
+              "[*] REHBER: İKİLİK (BINARY) BASAMAK DÜZENİ",
+              "AĞIRLIKLAR: [ 8 - 4 - 2 - 1 ]   Örnek: 0110 = 4 + 2 = 6  |  1001 = 8 + 1 = 9"
+            ]
+          },
+          {
+            "id": "NS-M7",
+            "text": "0101 + 0110 = ?  (onluk veya ikilik yazabilirsin)",
+            "answers": [
+              "11",
+              "1011"
+            ],
+            "hint": "İki sayıyı ayrı ayrı onluğa çevirip topla.",
+            "guide": [
+              "[*] REHBER: İKİLİK (BINARY) BASAMAK DÜZENİ",
+              "AĞIRLIKLAR: [ 8 - 4 - 2 - 1 ]   Örnek: 0110 = 4 + 2 = 6  |  1001 = 8 + 1 = 9"
+            ]
+          }
+        ],
+        "ZOR": [
+          {
+            "id": "NS-H1",
+            "text": "1010 AND 1100 bitwise işleminin sonucu nedir?  (ikilik veya onluk)",
+            "answers": [
+              "1000",
+              "8"
+            ],
+            "hint": "Yalnızca her iki sayıda da 1 olan basamak 1 kalır.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "NS-H2",
+            "text": "0x0A + 0x06 = ?  (onluk karşılığını yaz)",
+            "answers": [
+              "16",
+              "0X10"
+            ],
+            "hint": "A harfinin değerini bulup 6 ile topla.",
+            "guide": [
+              "[*] REHBER: HEXADECIMAL (16'LIK TABAN)",
+              "0-9 standart, A=10, B=11, C=12, D=13, E=14, F=15   |   0x1B = 1×16 + 11"
+            ]
+          },
+          {
+            "id": "NS-H3",
+            "text": "0011 ikilik sayısı 1 bit sola kaydırılırsa (<< 1) onluk değeri kaç olur?",
+            "answers": [
+              "6",
+              "0110",
+              "110"
+            ],
+            "hint": "Sola 1 bit kaydırmak sayıyı 2 ile çarpar.",
+            "guide": [
+              "[*] REHBER: BİT KAYDIRMA",
+              "Sola n bit kaydırmak = sayıyı 2^n ile çarpmak."
+            ]
+          },
+          {
+            "id": "NS-H4",
+            "text": "0xFF onluk olarak kaçtır?",
+            "answers": [
+              "255"
+            ],
+            "hint": "Her iki basamak da en büyük değerde: 15×16 + 15.",
+            "guide": [
+              "[*] REHBER: HEXADECIMAL (16'LIK TABAN)",
+              "0-9 standart, A=10, B=11, C=12, D=13, E=14, F=15   |   0x1B = 1×16 + 11"
+            ]
+          },
+          {
+            "id": "NS-H5",
+            "text": "1100 OR 1010 bitwise işleminin sonucu nedir?  (ikilik veya onluk)",
+            "answers": [
+              "1110",
+              "14"
+            ],
+            "hint": "Basamaklardan en az biri 1 ise sonuç 1 olur.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "NS-H6",
+            "text": "0101 ikilik sayısı 2 bit sola kaydırılırsa (<< 2) onluk değeri kaç olur?",
+            "answers": [
+              "20",
+              "10100"
+            ],
+            "hint": "Önce sayıyı onluğa çevir, sonra 2 bit kaydırmanın çarpanını uygula.",
+            "guide": [
+              "[*] REHBER: BİT KAYDIRMA",
+              "Sola n bit kaydırmak = sayıyı 2^n ile çarpmak."
+            ]
+          },
+          {
+            "id": "NS-H7",
+            "text": "0x10 - 0x01 = ?  (onluk karşılığını yaz)",
+            "answers": [
+              "15",
+              "0X0F",
+              "0XF"
+            ],
+            "hint": "0x10 sayısının onluk değerini bul, 1 çıkar.",
+            "guide": [
+              "[*] REHBER: HEXADECIMAL (16'LIK TABAN)",
+              "0-9 standart, A=10, B=11, C=12, D=13, E=14, F=15   |   0x1B = 1×16 + 11"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "CB",
+      "icon": "🐛",
+      "title": "C / C++ HATA AVI",
+      "inputPlaceholder": "Düzeltmeyi yazınız...",
+      "questions": {
+        "KOLAY": [
+          {
+            "id": "CB-E1",
+            "text": "1. satırın sonunda eksik olan karakter nedir?",
+            "answers": [
+              ";",
+              "SEMICOLON",
+              "NOKTALIVIRGUL"
+            ],
+            "hint": "C ve C++'ta her deyim özel bir noktalama işaretiyle biter.",
+            "lang": "C",
+            "code": [
+              "1 | int token = 1",
+              "2 | return token;"
+            ]
+          },
+          {
+            "id": "CB-E2",
+            "text": "Bloğu kapatmak için 3. satıra hangi karakter gelmelidir?",
+            "answers": [
+              "}"
+            ],
+            "hint": "Açılan süslü parantezin eşini yaz.",
+            "lang": "C++",
+            "code": [
+              "1 | if (access == 1) {",
+              "2 |     allow_login();",
+              "3 | "
+            ]
+          },
+          {
+            "id": "CB-E3",
+            "text": "std::cout için '>>' yerine hangi operatör kullanılmalıdır?",
+            "answers": [
+              "<<"
+            ],
+            "hint": "cin ve cout okları zıt yönlüdür.",
+            "lang": "C++",
+            "code": [
+              "1 | #include <iostream>",
+              "2 | std::cout >> \"ACCESS GRANTED\";"
+            ]
+          },
+          {
+            "id": "CB-E4",
+            "text": "for satırında eksik olan kapanış karakteri nedir?",
+            "answers": [
+              ")"
+            ],
+            "hint": "Açılan parantezin eşini unutmuşuz.",
+            "lang": "C",
+            "code": [
+              "1 | for (int i = 0; i < 3; i++ {",
+              "2 |     puts(\"scan\");",
+              "3 | }"
+            ]
+          },
+          {
+            "id": "CB-E5",
+            "text": "1. satırda eksik olan kapanış karakteri nedir?",
+            "answers": [
+              "]"
+            ],
+            "hint": "Dizi boyutunu açan köşeli parantezin eşi yok.",
+            "lang": "C",
+            "code": [
+              "1 | int arr[3 = {1, 2, 3};"
+            ]
+          },
+          {
+            "id": "CB-E6",
+            "text": "1. satırın sonunda eksik olan karakter nedir?",
+            "answers": [
+              ">"
+            ],
+            "hint": "Açılan açılı parantezin eşini yaz.",
+            "lang": "C",
+            "code": [
+              "1 | #include <stdio.h",
+              "2 | int main() { return 0; }"
+            ]
+          },
+          {
+            "id": "CB-E7",
+            "text": "std::cin için '<<' yerine hangi operatör kullanılmalıdır?",
+            "answers": [
+              ">>"
+            ],
+            "hint": "Veri klavyeden değişkene doğru akar; ok yönünü düşün.",
+            "lang": "C++",
+            "code": [
+              "1 | int pin;",
+              "2 | std::cin << pin;"
+            ]
+          }
+        ],
+        "ORTA": [
+          {
+            "id": "CB-M1",
+            "text": "scanf'in çalışması için 'pin' önüne hangi operatör eklenmelidir?",
+            "answers": [
+              "&"
+            ],
+            "hint": "scanf değişkenin değerini değil bellekteki yerini ister.",
+            "lang": "C",
+            "code": [
+              "1 | int pin;",
+              "2 | scanf(\"%d\", pin); // Segmentation Fault!"
+            ]
+          },
+          {
+            "id": "CB-M2",
+            "text": "Sistemin açılması için '<' yerine hangi operatör gelmelidir?",
+            "answers": [
+              ">",
+              ">="
+            ],
+            "hint": "Pil seviyesi 0'dan BÜYÜK olduğunda açılmalı.",
+            "lang": "C",
+            "code": [
+              "1 | int battery_level = 85;",
+              "2 | if (battery_level < 0) {",
+              "3 |     allow_boot = 1;",
+              "4 | }"
+            ]
+          },
+          {
+            "id": "CB-M3",
+            "text": "Dizinin ilk elemanına (10) erişmek için '1' yerine hangi indeks yazılmalıdır?",
+            "answers": [
+              "0",
+              "SIFIR"
+            ],
+            "hint": "C ve C++ dizilerinde sayma kaçtan başlar?",
+            "lang": "C++",
+            "code": [
+              "1 | int levels[] = {10, 20, 30};",
+              "2 | int first = levels[1];"
+            ]
+          },
+          {
+            "id": "CB-M4",
+            "text": "Döngünün bitmesi için gövdeye hangi ifade eklenmelidir?  (örn. sayaç artırma)",
+            "answers": [
+              "I++",
+              "++I",
+              "I+=1",
+              "I=I+1"
+            ],
+            "hint": "Şu an koşul hiçbir zaman yanlış olmuyor; sayaç değişmeli.",
+            "lang": "C",
+            "code": [
+              "1 | int i = 0;",
+              "2 | while (i < 3) {",
+              "3 |     puts(\"retry\");",
+              "4 | }"
+            ]
+          },
+          {
+            "id": "CB-M5",
+            "text": "Ondalıklı sayıyı yazdırmak için %d yerine hangi format belirteci kullanılmalıdır?",
+            "answers": [
+              "%F",
+              "%LF"
+            ],
+            "hint": "d tam sayı içindir; ondalıklı (float) sayının baş harfini düşün.",
+            "lang": "C",
+            "code": [
+              "1 | float pi = 3.14;",
+              "2 | printf(\"%d\", pi);"
+            ]
+          },
+          {
+            "id": "CB-M6",
+            "text": "3 elemanlı dizinin son geçerli indeksi kaçtır?",
+            "answers": [
+              "2"
+            ],
+            "hint": "İndeksler 0'dan başlarsa 3 eleman hangi sayıda biter?",
+            "lang": "C",
+            "code": [
+              "1 | int a[3];",
+              "2 | a[3] = 7; // taşma!"
+            ]
+          },
+          {
+            "id": "CB-M7",
+            "text": "Döngünün bitmesi için i-- yerine ne yazılmalıdır?",
+            "answers": [
+              "I++",
+              "++I",
+              "I+=1",
+              "I=I+1"
+            ],
+            "hint": "Sayaç 3'e ulaşmalı ama şu an uzaklaşıyor.",
+            "lang": "C",
+            "code": [
+              "1 | for (int i = 0; i < 3; i--) {",
+              "2 |     puts(\"scan\");",
+              "3 | }"
+            ]
+          }
+        ],
+        "ZOR": [
+          {
+            "id": "CB-H1",
+            "text": "Eşitlik kontrolü için tek '=' yerine ne yazılmalıdır?",
+            "answers": [
+              "=="
+            ],
+            "hint": "Karşılaştırma ve atama farklı operatörlerdir.",
+            "lang": "C",
+            "code": [
+              "1 | int auth_level = 0;",
+              "2 | if (auth_level = 4) {",
+              "3 |     grant_root_access();",
+              "4 | }"
+            ]
+          },
+          {
+            "id": "CB-H2",
+            "text": "İşaretçinin gösterdiği değere erişmek için 'ptr' önüne hangi operatör konmalıdır?",
+            "answers": [
+              "*"
+            ],
+            "hint": "Adresi değil, adresin içindeki veriyi okumak istiyoruz.",
+            "lang": "C",
+            "code": [
+              "1 | int val = 42;",
+              "2 | int *ptr = &val;",
+              "3 | int read_val = ptr;"
+            ]
+          },
+          {
+            "id": "CB-H3",
+            "text": "'new' ile ayrılan belleği serbest bırakmak için hangi C++ anahtar kelimesi kullanılır?",
+            "answers": [
+              "DELETE",
+              "DELETE[]"
+            ],
+            "hint": "C'deki free'nin C++ dünyasındaki karşılığı.",
+            "lang": "C++",
+            "code": [
+              "1 | int* buffer = new int[128];",
+              "2 | // ... işlemler ...",
+              "3 | ???[] buffer;"
+            ]
+          },
+          {
+            "id": "CB-H4",
+            "text": "Her case'in sonuna, alttaki case'lere düşmeyi engelleyen hangi anahtar kelime konmalıdır?",
+            "answers": [
+              "BREAK",
+              "BREAK;"
+            ],
+            "hint": "switch'ten çıkış yapan deyim.",
+            "lang": "C",
+            "code": [
+              "1 | switch (level) {",
+              "2 |   case 1: puts(\"low\");",
+              "3 |   case 2: puts(\"high\");",
+              "4 | }"
+            ]
+          },
+          {
+            "id": "CB-H5",
+            "text": "Mantıksal VE için tek '&' yerine ne yazılmalıdır?",
+            "answers": [
+              "&&"
+            ],
+            "hint": "Tek sembol bitwise işlemdir; mantıksal işlem çift semboldür.",
+            "lang": "C",
+            "code": [
+              "1 | if (x > 0 & y > 0) {",
+              "2 |     open_gate();",
+              "3 | }"
+            ]
+          },
+          {
+            "id": "CB-H6",
+            "text": "Fonksiyonun başına hangi dönüş tipi yazılmalıdır?",
+            "answers": [
+              "INT"
+            ],
+            "hint": "Fonksiyon iki tam sayının toplamını döndürüyor.",
+            "lang": "C",
+            "code": [
+              "1 | sum(int a, int b) {",
+              "2 |     return a + b;",
+              "3 | }"
+            ]
+          },
+          {
+            "id": "CB-H7",
+            "text": "Sınıf tanımında 3. satırdaki } işaretinden sonra eksik olan karakter nedir?",
+            "answers": [
+              ";"
+            ],
+            "hint": "C++'ta class ve struct tanımları özel bir noktalamayla biter.",
+            "lang": "C++",
+            "code": [
+              "1 | class User {",
+              "2 |     int id;",
+              "3 | }",
+              "4 | int main() { return 0; }"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "CO",
+      "icon": "🖥️",
+      "title": "ÇIKTI TAHMİNİ",
+      "inputPlaceholder": "Programın çıktısını yazınız...",
+      "questions": {
+        "KOLAY": [
+          {
+            "id": "CO-E1",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "7"
+            ],
+            "hint": "x'in değeri adım adım nasıl değişiyor, takip et.",
+            "lang": "C",
+            "code": [
+              "1 | int x = 4;",
+              "2 | x += 3;",
+              "3 | printf(\"%d\", x);"
+            ]
+          },
+          {
+            "id": "CO-E2",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "3"
+            ],
+            "hint": "Tam sayı bölmesi: ne kadar tam sığıyor?",
+            "lang": "C",
+            "code": [
+              "1 | int a = 6, b = 2;",
+              "2 | printf(\"%d\", a / b);"
+            ]
+          },
+          {
+            "id": "CO-E3",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "10"
+            ],
+            "hint": "s'ye iki kez aynı sayıyı ekliyoruz.",
+            "lang": "C++",
+            "code": [
+              "1 | int s = 0;",
+              "2 | s = s + 5;",
+              "3 | s = s + 5;",
+              "4 | std::cout << s;"
+            ]
+          },
+          {
+            "id": "CO-E4",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "4"
+            ],
+            "hint": "i++ değişkeni bir artırır.",
+            "lang": "C",
+            "code": [
+              "1 | int i = 3;",
+              "2 | i++;",
+              "3 | printf(\"%d\", i);"
+            ]
+          },
+          {
+            "id": "CO-E5",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "5"
+            ],
+            "hint": "a'nın değerinin adım adım nasıl değiştiğini takip et.",
+            "lang": "C",
+            "code": [
+              "1 | int a = 9;",
+              "2 | a -= 4;",
+              "3 | printf(\"%d\", a);"
+            ]
+          },
+          {
+            "id": "CO-E6",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "6"
+            ],
+            "hint": "Önce sağ taraf hesaplanır, sonra x'e atanır.",
+            "lang": "C",
+            "code": [
+              "1 | int x = 2 * 3;",
+              "2 | printf(\"%d\", x);"
+            ]
+          },
+          {
+            "id": "CO-E7",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "4"
+            ],
+            "hint": "a'nın yarısı a'ya geri atanıyor.",
+            "lang": "C++",
+            "code": [
+              "1 | int a = 8;",
+              "2 | a = a / 2;",
+              "3 | std::cout << a;"
+            ]
+          }
+        ],
+        "ORTA": [
+          {
+            "id": "CO-M1",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "3"
+            ],
+            "hint": "İki tam sayının bölümü küsurat taşımaz.",
+            "lang": "C",
+            "code": [
+              "1 | printf(\"%d\", 7 / 2);"
+            ]
+          },
+          {
+            "id": "CO-M2",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "1"
+            ],
+            "hint": "% operatörü bölümden kalanı verir.",
+            "lang": "C",
+            "code": [
+              "1 | printf(\"%d\", 10 % 3);"
+            ]
+          },
+          {
+            "id": "CO-M3",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "10"
+            ],
+            "hint": "Önce çarpma, sonra toplama.",
+            "lang": "C++",
+            "code": [
+              "1 | int a = 3;",
+              "2 | int b = a * a + 1;",
+              "3 | std::cout << b;"
+            ]
+          },
+          {
+            "id": "CO-M4",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "23"
+            ],
+            "hint": "Dizi indeksleri 0'dan başlar; arr[1] ve arr[2]'yi bul.",
+            "lang": "C",
+            "code": [
+              "1 | int arr[] = {4, 8, 15};",
+              "2 | printf(\"%d\", arr[1] + arr[2]);"
+            ]
+          },
+          {
+            "id": "CO-M5",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "2"
+            ],
+            "hint": "% operatörü bölümden kalanı verir.",
+            "lang": "C",
+            "code": [
+              "1 | printf(\"%d\", 17 % 5);"
+            ]
+          },
+          {
+            "id": "CO-M6",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "10"
+            ],
+            "hint": "Önce koşulun doğru mu yanlış mı olduğuna bak.",
+            "lang": "C",
+            "code": [
+              "1 | int x = 5;",
+              "2 | if (x > 3) x = x * 2;",
+              "3 | else x = 0;",
+              "4 | printf(\"%d\", x);"
+            ]
+          },
+          {
+            "id": "CO-M7",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "14"
+            ],
+            "hint": "İşlem önceliği: çarpma toplamadan önce yapılır.",
+            "lang": "C++",
+            "code": [
+              "1 | int a = 2 + 3 * 4;",
+              "2 | std::cout << a;"
+            ]
+          }
+        ],
+        "ZOR": [
+          {
+            "id": "CO-H1",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "5"
+            ],
+            "hint": "i++ (post-increment) önce değeri kullanır, sonra artırır.",
+            "lang": "C",
+            "code": [
+              "1 | int i = 5;",
+              "2 | printf(\"%d\", i++);"
+            ]
+          },
+          {
+            "id": "CO-H2",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "6"
+            ],
+            "hint": "++i (pre-increment) önce artırır, sonra değeri kullanır.",
+            "lang": "C",
+            "code": [
+              "1 | int i = 5;",
+              "2 | printf(\"%d\", ++i);"
+            ]
+          },
+          {
+            "id": "CO-H3",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "10"
+            ],
+            "hint": "Döngü hangi i değerleri için kaç kez çalışıyor?",
+            "lang": "C++",
+            "code": [
+              "1 | int s = 0;",
+              "2 | for (int i = 1; i <= 4; i++)",
+              "3 |     s += i;",
+              "4 | std::cout << s;"
+            ]
+          },
+          {
+            "id": "CO-H4",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "3"
+            ],
+            "hint": "7'yi ikilik yaz, 3 ile basamak basamak AND'le.",
+            "lang": "C",
+            "code": [
+              "1 | int x = 7;",
+              "2 | printf(\"%d\", x & 3);"
+            ]
+          },
+          {
+            "id": "CO-H5",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "12"
+            ],
+            "hint": "i'nin aldığı değerleri sırayla yaz; koşul ne zaman bozuluyor?",
+            "lang": "C",
+            "code": [
+              "1 | int i = 0;",
+              "2 | while (i < 10)",
+              "3 |     i += 3;",
+              "4 | printf(\"%d\", i);"
+            ]
+          },
+          {
+            "id": "CO-H6",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "8"
+            ],
+            "hint": "Sola kaydırma her adımda sayıyı ikiye katlar.",
+            "guide": [
+              "[*] REHBER: BİT KAYDIRMA",
+              "Sola n bit kaydırmak = sayıyı 2^n ile çarpmak."
+            ],
+            "lang": "C",
+            "code": [
+              "1 | int x = 1;",
+              "2 | x = x << 3;",
+              "3 | printf(\"%d\", x);"
+            ]
+          },
+          {
+            "id": "CO-H7",
+            "text": "Kod çalışınca ekrana ne yazdırır?",
+            "answers": [
+              "6"
+            ],
+            "hint": "Döngü i'yi 2'şer artırıyor; hangi i değerleri toplanıyor?",
+            "lang": "C++",
+            "code": [
+              "1 | int s = 0;",
+              "2 | for (int i = 0; i < 5; i += 2)",
+              "3 |     s += i;",
+              "4 | std::cout << s;"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "LG",
+      "icon": "⚡",
+      "title": "MANTIK KAPILARI",
+      "inputPlaceholder": "Sonucu giriniz...",
+      "questions": {
+        "KOLAY": [
+          {
+            "id": "LG-E1",
+            "text": "1 AND 0 = ?",
+            "answers": [
+              "0"
+            ],
+            "hint": "AND yalnızca iki giriş de 1 iken 1 verir.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-E2",
+            "text": "1 OR 0 = ?",
+            "answers": [
+              "1"
+            ],
+            "hint": "OR, girişlerden en az biri 1 ise 1 verir.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-E3",
+            "text": "NOT 1 = ?",
+            "answers": [
+              "0"
+            ],
+            "hint": "NOT girişi tersine çevirir.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-E4",
+            "text": "1 AND 1 = ?",
+            "answers": [
+              "1"
+            ],
+            "hint": "İki giriş de 1 olduğunda AND kapısı ne yapar?",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-E5",
+            "text": "0 OR 0 = ?",
+            "answers": [
+              "0"
+            ],
+            "hint": "OR için en az bir girişin 1 olması gerekir.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-E6",
+            "text": "NOT 0 = ?",
+            "answers": [
+              "1"
+            ],
+            "hint": "NOT girişi tersine çevirir.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-E7",
+            "text": "1 XOR 0 = ?",
+            "answers": [
+              "1"
+            ],
+            "hint": "XOR girişler farklıyken ne verir?",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          }
+        ],
+        "ORTA": [
+          {
+            "id": "LG-M1",
+            "text": "1100 OR 0011 = ?  (ikilik yaz)",
+            "answers": [
+              "1111"
+            ],
+            "hint": "Her basamak çiftine OR uygula.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-M2",
+            "text": "NOT 1010 = ?  (4 bit, ikilik yaz)",
+            "answers": [
+              "0101",
+              "101"
+            ],
+            "hint": "4 basamağın her birini ters çevir.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-M3",
+            "text": "1011 XOR 0110 = ?  (ikilik yaz)",
+            "answers": [
+              "1101"
+            ],
+            "hint": "Basamaklar farklıysa 1, aynıysa 0.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-M4",
+            "text": "1101 AND 1011 = ?  (ikilik yaz)",
+            "answers": [
+              "1001"
+            ],
+            "hint": "Yalnızca ikisinde de 1 olan basamaklar 1 kalır.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-M5",
+            "text": "1010 AND 0110 = ?  (ikilik yaz)",
+            "answers": [
+              "0010",
+              "10"
+            ],
+            "hint": "Yalnızca ikisinde de 1 olan basamaklar 1 kalır.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-M6",
+            "text": "1111 XOR 1010 = ?  (ikilik yaz)",
+            "answers": [
+              "0101",
+              "101"
+            ],
+            "hint": "Basamaklar farklıysa 1, aynıysa 0.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-M7",
+            "text": "NOT 0011 = ?  (4 bit, ikilik yaz)",
+            "answers": [
+              "1100"
+            ],
+            "hint": "4 basamağın her birini ters çevir.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          }
+        ],
+        "ZOR": [
+          {
+            "id": "LG-H1",
+            "text": "(A AND B) OR C ifadesi, A-B-C'nin 8 farklı kombinasyonunun kaçında 1 verir?",
+            "answers": [
+              "5"
+            ],
+            "hint": "C=1 olan satırları ve C=0 iken A AND B=1 olan satırları say.",
+            "guide": [
+              "[*] REHBER: 3 GİRİŞLİ DOĞRULUK TABLOSU",
+              "A, B, C girişleri 2×2×2 = 8 farklı satır oluşturur. Cevap: ifadenin 1 çıktığı satır sayısı."
+            ]
+          },
+          {
+            "id": "LG-H2",
+            "text": "(A OR B) AND C ifadesi 8 kombinasyonun kaçında 1 verir?",
+            "answers": [
+              "3"
+            ],
+            "hint": "C=1 olmak zorunda; o satırlarda A OR B'nin 1 olduğunu say.",
+            "guide": [
+              "[*] REHBER: 3 GİRİŞLİ DOĞRULUK TABLOSU",
+              "A, B, C girişleri 2×2×2 = 8 farklı satır oluşturur. Cevap: ifadenin 1 çıktığı satır sayısı."
+            ]
+          },
+          {
+            "id": "LG-H3",
+            "text": "A XOR B XOR C ifadesi 8 kombinasyonun kaçında 1 verir?",
+            "answers": [
+              "4"
+            ],
+            "hint": "Tek sayıda 1 içeren giriş satırlarını say.",
+            "guide": [
+              "[*] REHBER: 3 GİRİŞLİ DOĞRULUK TABLOSU",
+              "A, B, C girişleri 2×2×2 = 8 farklı satır oluşturur. Cevap: ifadenin 1 çıktığı satır sayısı."
+            ]
+          },
+          {
+            "id": "LG-H4",
+            "text": "A AND B AND C ifadesi 8 kombinasyonun kaçında 0 verir?",
+            "answers": [
+              "7"
+            ],
+            "hint": "Kaç satırda 1 verir? Toplamdan çıkar.",
+            "guide": [
+              "[*] REHBER: 3 GİRİŞLİ DOĞRULUK TABLOSU",
+              "A, B, C girişleri 2×2×2 = 8 farklı satır oluşturur. Cevap: ifadenin 1 çıktığı satır sayısı."
+            ]
+          },
+          {
+            "id": "LG-H5",
+            "text": "A=1, B=0, C=1 için (A AND B) OR (NOT C) = ?",
+            "answers": [
+              "0"
+            ],
+            "hint": "Önce parantezleri ayrı ayrı hesapla, sonra OR uygula.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-H6",
+            "text": "A=0, B=1, C=1 için NOT(A OR B) OR (B AND C) = ?",
+            "answers": [
+              "1"
+            ],
+            "hint": "İçteki parantezlerden başla; NOT en son içteki sonuca uygulanır.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          },
+          {
+            "id": "LG-H7",
+            "text": "A OR B ifadesi, A-B'nin 4 farklı kombinasyonunun kaçında 1 verir?",
+            "answers": [
+              "3"
+            ],
+            "hint": "00, 01, 10, 11 satırlarını tek tek dene.",
+            "guide": [
+              "[*] REHBER: MANTIK KAPILARI",
+              "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+              "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "LN",
+      "icon": "🐧",
+      "title": "LINUX VE AĞ",
+      "inputPlaceholder": "Cevabı yazınız...",
+      "questions": {
+        "KOLAY": [
+          {
+            "id": "LN-E1",
+            "text": "Bulunduğun klasörün içeriğini listeleyen Linux komutu nedir?",
+            "answers": [
+              "LS"
+            ],
+            "hint": "İki harfli, 'listele' fikrinin kısaltması.",
+            "guide": [
+              "[*] REHBER: LINUX TEMEL KOMUTLAR",
+              "Komutlar küçük harfle ve genelde kısadır."
+            ]
+          },
+          {
+            "id": "LN-E2",
+            "text": "Başka bir klasöre geçmek için kullanılan Linux komutu nedir?",
+            "answers": [
+              "CD"
+            ],
+            "hint": "İngilizce 'change directory' ifadesinin kısaltması.",
+            "guide": [
+              "[*] REHBER: LINUX TEMEL KOMUTLAR",
+              "Komutlar küçük harfle ve genelde kısadır."
+            ]
+          },
+          {
+            "id": "LN-E3",
+            "text": "Bir dosyayı silmek için kullanılan Linux komutu nedir?",
+            "answers": [
+              "RM"
+            ],
+            "hint": "İngilizce 'remove' kelimesinin kısaltması.",
+            "guide": [
+              "[*] REHBER: LINUX TEMEL KOMUTLAR",
+              "Komutlar küçük harfle ve genelde kısadır."
+            ]
+          },
+          {
+            "id": "LN-E4",
+            "text": "Bir sunucunun ulaşılabilir olup olmadığını test eden komut nedir?",
+            "answers": [
+              "PING"
+            ],
+            "hint": "Sonar benzeri bir paket gönderip yanıt süresini ölçer.",
+            "guide": [
+              "[*] REHBER: AĞ ARAÇLARI",
+              "Bu komut ICMP paketleri gönderir."
+            ]
+          },
+          {
+            "id": "LN-E5",
+            "text": "Bir dosyanın içeriğini ekrana yazdıran Linux komutu nedir?",
+            "answers": [
+              "CAT"
+            ],
+            "hint": "'concatenate' (birleştirmek) kelimesinin ilk 3 harfi.",
+            "guide": [
+              "[*] REHBER: LINUX TEMEL KOMUTLAR",
+              "Komutlar küçük harfle ve genelde kısadır."
+            ]
+          },
+          {
+            "id": "LN-E6",
+            "text": "Yeni bir klasör oluşturan Linux komutu nedir?",
+            "answers": [
+              "MKDIR"
+            ],
+            "hint": "'make directory' ifadesinin kısaltması.",
+            "guide": [
+              "[*] REHBER: LINUX TEMEL KOMUTLAR",
+              "Komutlar küçük harfle ve genelde kısadır."
+            ]
+          },
+          {
+            "id": "LN-E7",
+            "text": "Bir komutu yönetici (root) yetkisiyle çalıştırmak için başına yazılan komut nedir?",
+            "answers": [
+              "SUDO"
+            ],
+            "hint": "'superuser do' ifadesinin kısaltması.",
+            "guide": [
+              "[*] REHBER: LINUX TEMEL KOMUTLAR",
+              "Komutlar küçük harfle ve genelde kısadır."
+            ]
+          }
+        ],
+        "ORTA": [
+          {
+            "id": "LN-M1",
+            "text": "SSH'ın varsayılan port numarası kaçtır?",
+            "answers": [
+              "22"
+            ],
+            "hint": "Telnet'in güvenli halefi; telnet portunun bir öncesi.",
+            "guide": [
+              "[*] REHBER: PORTLAR",
+              "Port numaraları 0-65535 arasındadır; bilinen servisler 1024'ün altındadır."
+            ]
+          },
+          {
+            "id": "LN-M2",
+            "text": "HTTPS'in varsayılan port numarası kaçtır?",
+            "answers": [
+              "443"
+            ],
+            "hint": "Güvenli web trafiği; HTTP'nin (80) TLS'li kardeşi.",
+            "guide": [
+              "[*] REHBER: PORTLAR",
+              "Port numaraları 0-65535 arasındadır; bilinen servisler 1024'ün altındadır."
+            ]
+          },
+          {
+            "id": "LN-M3",
+            "text": "DNS sorgularının varsayılan port numarası kaçtır?",
+            "answers": [
+              "53"
+            ],
+            "hint": "Alan adlarını IP adreslerine çeviren servis; 50'li sayılardan biri.",
+            "guide": [
+              "[*] REHBER: PORTLAR",
+              "Port numaraları 0-65535 arasındadır; bilinen servisler 1024'ün altındadır."
+            ]
+          },
+          {
+            "id": "LN-M4",
+            "text": "Bulunduğun dizinin tam yolunu yazdıran Linux komutu nedir?",
+            "answers": [
+              "PWD"
+            ],
+            "hint": "'print working directory' ifadesinin kısaltması.",
+            "guide": [
+              "[*] REHBER: LINUX TEMEL KOMUTLAR",
+              "Komutlar küçük harfle ve genelde kısadır."
+            ]
+          },
+          {
+            "id": "LN-M5",
+            "text": "HTTP'nin varsayılan port numarası kaçtır?",
+            "answers": [
+              "80"
+            ],
+            "hint": "Şifresiz web trafiği; iki haneli, sıfırla biten bir sayı.",
+            "guide": [
+              "[*] REHBER: PORTLAR",
+              "Port numaraları 0-65535 arasındadır; bilinen servisler 1024'ün altındadır."
+            ]
+          },
+          {
+            "id": "LN-M6",
+            "text": "Bir dosyayı taşıyan veya yeniden adlandıran Linux komutu nedir?",
+            "answers": [
+              "MV"
+            ],
+            "hint": "'move' kelimesinin kısaltması.",
+            "guide": [
+              "[*] REHBER: LINUX TEMEL KOMUTLAR",
+              "Komutlar küçük harfle ve genelde kısadır."
+            ]
+          },
+          {
+            "id": "LN-M7",
+            "text": "Bir dosya içinde kelime arayan Linux komutu nedir?",
+            "answers": [
+              "GREP"
+            ],
+            "hint": "'global regular expression print' baş harfleri.",
+            "guide": [
+              "[*] REHBER: LINUX TEMEL KOMUTLAR",
+              "Komutlar küçük harfle ve genelde kısadır."
+            ]
+          }
+        ],
+        "ZOR": [
+          {
+            "id": "LN-H1",
+            "text": "rwx r-x r-- izinlerinin chmod karşılığı (3 haneli) nedir?",
+            "answers": [
+              "754"
+            ],
+            "hint": "Her grubu ayrı ayrı topla: kullanıcı, grup, diğer.",
+            "guide": [
+              "[*] REHBER: DOSYA İZİNLERİ",
+              "r=4, w=2, x=1 — her grup (kullanıcı/grup/diğer) için değerler toplanır."
+            ]
+          },
+          {
+            "id": "LN-H2",
+            "text": "192.168.1.0/24 ağında kullanılabilir host sayısı kaçtır?",
+            "answers": [
+              "254"
+            ],
+            "hint": "Host bitleri sayısı 8; ağ ve broadcast adreslerini çıkar.",
+            "guide": [
+              "[*] REHBER: ALT AĞ (SUBNET)",
+              "Kullanılabilir host sayısı = 2^(32 - önek) - 2   (ağ ve broadcast adresi düşülür)"
+            ]
+          },
+          {
+            "id": "LN-H3",
+            "text": "192.168.1.0/26 ağında kullanılabilir host sayısı kaçtır?",
+            "answers": [
+              "62"
+            ],
+            "hint": "Host bitleri sayısı 6; iki adresi çıkarmayı unutma.",
+            "guide": [
+              "[*] REHBER: ALT AĞ (SUBNET)",
+              "Kullanılabilir host sayısı = 2^(32 - önek) - 2   (ağ ve broadcast adresi düşülür)"
+            ]
+          },
+          {
+            "id": "LN-H4",
+            "text": "10.0.0.0/30 ağında kullanılabilir host sayısı kaçtır?",
+            "answers": [
+              "2"
+            ],
+            "hint": "Host bitleri sayısı 2; 4 adresin ikisi ayrılmış.",
+            "guide": [
+              "[*] REHBER: ALT AĞ (SUBNET)",
+              "Kullanılabilir host sayısı = 2^(32 - önek) - 2   (ağ ve broadcast adresi düşülür)"
+            ]
+          },
+          {
+            "id": "LN-H5",
+            "text": "rw- r-- r-- izinlerinin chmod karşılığı (3 haneli) nedir?",
+            "answers": [
+              "644"
+            ],
+            "hint": "Her grubu ayrı ayrı topla: kullanıcı, grup, diğer.",
+            "guide": [
+              "[*] REHBER: DOSYA İZİNLERİ",
+              "r=4, w=2, x=1 — her grup (kullanıcı/grup/diğer) için değerler toplanır."
+            ]
+          },
+          {
+            "id": "LN-H6",
+            "text": "rwx rwx r-x izinlerinin chmod karşılığı (3 haneli) nedir?",
+            "answers": [
+              "775"
+            ],
+            "hint": "Her grubu ayrı ayrı topla; ilk ikisi aynı.",
+            "guide": [
+              "[*] REHBER: DOSYA İZİNLERİ",
+              "r=4, w=2, x=1 — her grup (kullanıcı/grup/diğer) için değerler toplanır."
+            ]
+          },
+          {
+            "id": "LN-H7",
+            "text": "192.168.0.0/28 ağında kullanılabilir host sayısı kaçtır?",
+            "answers": [
+              "14"
+            ],
+            "hint": "Host bitleri sayısı 4; iki adresi çıkarmayı unutma.",
+            "guide": [
+              "[*] REHBER: ALT AĞ (SUBNET)",
+              "Kullanılabilir host sayısı = 2^(32 - önek) - 2   (ağ ve broadcast adresi düşülür)"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

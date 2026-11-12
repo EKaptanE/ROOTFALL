@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ROOTFALL v7.0 // BREACH TERMINAL</title>
+  <style>
+    /* ==========================================================================
+       ROOTFALL v7.0 // BREACH TERMINAL
+       100% Offline, Zero External Dependencies, Single-File Architecture
+       ========================================================================== */
+    :root {
+      --bg-abyss: #05080f;
+      --bg-surface: #090d16;
+      --bg-panel: rgba(9, 13, 22, 0.94);
+      --bg-card: rgba(13, 19, 33, 0.96);
+      --cyan-bright: #00f0ff;
+      --cyan-glow: rgba(0, 240, 255, 0.5);
+      --blue-subtle: #38bdf8;
+      --text-main: #e2e8f0;
+      --text-dim: #64748b;
+      --text-muted: #475569;
+      --blood-neon: #ff003c;
+      --blood-glow: rgba(255, 0, 60, 0.65);
+      --pink-neon: #f43f5e;
+      --pink-glow: rgba(244, 63, 94, 0.55);
+      --amber-gold: #f59e0b;
+      --amber-glow: rgba(245, 158, 11, 0.45);
+      --emerald-green: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.5);
+      --white-glow: #f8fafc;
+      --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, Monaco, "Courier New", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-abyss);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.5;
+      overflow: hidden;
+      user-select: text;
+    }
+
+    /* CRT Scanlines, Vignette & Flicker Overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(rgba(18, 24, 38, 0) 50%, rgba(0, 0, 0, 0.42) 50%),
+                  radial-gradient(circle at center, transparent 60%, rgba(2, 4, 8, 0.88) 100%);
+      background-size: 100% 3px, 100% 100%;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.9;
+    }
+
+    /* Screen Shake FX on Error / Penalty */
+    .screen-shake {
+      animation: shakeFx 0.35s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes shakeFx {
+      10%, 90% { transform: translate3d(-4px, 2px, 0); }
+      20%, 80% { transform: translate3d(5px, -3px, 0); }
+      30%, 50%, 70% { transform: translate3d(-6px, 4px, 0); }
+      40%, 60% { transform: translate3d(6px, -4px, 0); }
+    }
+
+    /* Screen Flash Overlays */
+    .screen-flash-blood {
+      animation: flashBlood 0.65s ease-out;
+    }
+    @keyframes flashBlood {
+      0%   { background-color: rgba(255, 0, 60, 0.42); }
+      100% { background-color: var(--bg-abyss); }
+    }
+
+    .screen-flash-green {
+      animation: flashGreen 0.65s ease-out;
+    }
+    @keyframes flashGreen {
+      0%   { background-color: rgba(16, 185, 129, 0.4); }
+      100% { background-color: var(--bg-abyss); }
+    }
+
+    /* App Container */
+    #terminal-app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      max-width: 1240px;
+      margin: 0 auto;
+      border-left: 1px solid rgba(0, 240, 255, 0.18);
+      border-right: 1px solid rgba(0, 240, 255, 0.18);
+      box-shadow: 0 0 50px rgba(0, 240, 255, 0.06);
+      position: relative;
+    }
+
+    /* Top Terminal Header */
+    #term-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 18px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+      z-index: 10;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      color: var(--cyan-bright);
+      text-shadow: 0 0 10px var(--cyan-glow);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-tag {
+      background: rgba(255, 0, 60, 0.18);
+      border: 1px solid var(--blood-neon);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 11px;
+      color: #fff;
+      text-shadow: 0 0 6px var(--blood-glow);
+      letter-spacing: 0.8px;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .timer-badge {
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 1.2px;
+      color: var(--cyan-bright);
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid var(--cyan-bright);
+      padding: 4px 12px;
+      border-radius: 4px;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+      transition: all 0.25s ease;
+      min-width: 90px;
+      text-align: center;
+    }
+
+    .timer-badge.urgent {
+      color: var(--blood-neon);
+      border-color: var(--blood-neon);
+      background: rgba(255, 0, 60, 0.16);
+      box-shadow: 0 0 18px var(--blood-glow);
+      animation: pulseAlert 0.75s infinite alternate;
+    }
+
+    @keyframes pulseAlert {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+
+    .ctrl-btn {
+      background: rgba(9, 13, 22, 0.95);
+      color: var(--blue-subtle);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      padding: 5px 12px;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+
+    .ctrl-btn:hover {
+      color: var(--cyan-bright);
+      border-color: var(--cyan-bright);
+      box-shadow: 0 0 10px var(--cyan-glow);
+      background: rgba(0, 240, 255, 0.12);
+    }
+
+    .ctrl-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* Terminal Output Log Area */
+    #term-body {
+      flex: 1;
+      padding: 16px 22px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      scroll-behavior: smooth;
+    }
+
+    #term-body::-webkit-scrollbar {
+      width: 7px;
+    }
+    #term-body::-webkit-scrollbar-track {
+      background: rgba(5, 8, 15, 0.8);
+    }
+    #term-body::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.35);
+      border-radius: 3px;
+    }
+    #term-body::-webkit-scrollbar-thumb:hover {
+      background: var(--cyan-bright);
+    }
+
+    /* Terminal Text Line Utilities */
+    .term-line {
+      word-break: break-word;
+      white-space: pre-wrap;
+      line-height: 1.55;
+    }
+
+    .c-cyan   { color: var(--cyan-bright); }
+    .c-blue   { color: var(--blue-subtle); }
+    .c-blood  { color: var(--blood-neon); }
+    .c-pink   { color: var(--pink-neon); }
+    .c-amber  { color: var(--amber-gold); }
+    .c-green  { color: var(--emerald-green); }
+    .c-dim    { color: var(--text-dim); }
+    .c-muted  { color: var(--text-muted); }
+    .c-white  { color: var(--white-glow); }
+    .bold     { font-weight: 700; }
+
+    .glow-cyan  { text-shadow: 0 0 8px var(--cyan-glow); }
+    .glow-blood { text-shadow: 0 0 10px var(--blood-glow); }
+    .glow-amber { text-shadow: 0 0 8px var(--amber-glow); }
+    .glow-green { text-shadow: 0 0 8px var(--emerald-glow); }
+
+    /* ASCII / Info Boxes */
+    .ascii-box {
+      background: var(--bg-surface);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 4px;
+      padding: 12px 16px;
+      margin: 8px 0;
+      color: var(--blue-subtle);
+      font-size: 13px;
+      overflow-x: auto;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.6);
+    }
+
+    .ascii-box.blood-border {
+      border-color: var(--blood-neon);
+      box-shadow: inset 0 0 20px rgba(255, 0, 60, 0.2);
+    }
+
+    .ascii-box.amber-border {
+      border-color: var(--amber-gold);
+      box-shadow: inset 0 0 20px rgba(245, 158, 11, 0.15);
+    }
+
+    .ascii-box.green-border {
+      border-color: var(--emerald-green);
+      box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.2);
+    }
+
+    /* Code Card Box */
+    .code-card {
+      background: #03060b;
+      border-left: 3px solid var(--cyan-bright);
+      padding: 10px 14px;
+      margin: 8px 0;
+      border-radius: 0 4px 4px 0;
+      font-size: 13px;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+    }
+
+    .code-line {
+      display: flex;
+      gap: 12px;
+      font-family: inherit;
+    }
+    .code-content {
+      color: var(--white-glow);
+    }
+
+    /* Command Input Line */
+    #term-input-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      background: var(--bg-panel);
+      border-top: 1px solid rgba(0, 240, 255, 0.25);
+      gap: 10px;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .prompt-label {
+      color: var(--cyan-bright);
+      font-weight: 700;
+      white-space: nowrap;
+      text-shadow: 0 0 6px var(--cyan-glow);
+      user-select: none;
+      letter-spacing: 0.5px;
+    }
+
+    .prompt-label.blood {
+      color: var(--blood-neon);
+      text-shadow: 0 0 8px var(--blood-glow);
+    }
+
+    .input-wrapper {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    #term-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--white-glow);
+      font-family: var(--font-mono);
+      font-size: 15px;
+      caret-color: var(--cyan-bright);
+      letter-spacing: 0.6px;
+    }
+
+    #term-input::placeholder {
+      color: rgba(100, 116, 139, 0.6);
+      font-size: 13px;
+    }
+
+    /* Blinking Block Cursor */
+    .cursor-block {
+      display: inline-block;
+      width: 9px;
+      height: 16px;
+      background-color: var(--cyan-bright);
+      margin-left: 2px;
+      animation: blinkCursor 1s step-start infinite;
+      box-shadow: 0 0 6px var(--cyan-bright);
+      vertical-align: middle;
+      pointer-events: none;
+    }
+
+    @keyframes blinkCursor {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    /* Interactive Action Buttons */
+    .action-btn-container {
+      margin: 14px 0 6px 0;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid var(--cyan-bright);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 10px 22px;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.3);
+      transition: all 0.2s ease;
+      letter-spacing: 0.8px;
+    }
+    .action-btn:hover {
+      background: var(--cyan-bright);
+      color: #05080f;
+      box-shadow: 0 0 28px var(--cyan-bright);
+    }
+
+    .action-btn.blood {
+      background: rgba(255, 0, 60, 0.2);
+      border-color: var(--blood-neon);
+      box-shadow: 0 0 16px var(--blood-glow);
+    }
+    .action-btn.blood:hover {
+      background: var(--blood-neon);
+      color: #fff;
+      box-shadow: 0 0 28px var(--blood-neon);
+    }
+
+    /* Digital Certificate Voucher */
+    .voucher-card {
+      background: #04070d;
+      border: 2px solid var(--cyan-bright);
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.3), inset 0 0 20px rgba(0, 240, 255, 0.12);
+      border-radius: 6px;
+      padding: 18px 22px;
+      margin: 12px 0 6px 0;
+      color: var(--white-glow);
+      position: relative;
+    }
+
+    .voucher-card::after {
+      content: "VERIFIED ROOTFALL BREACH CERTIFICATE // LEVEL 4 ROOT";
+      position: absolute;
+      top: 6px;
+      right: 12px;
+      font-size: 9.5px;
+      color: rgba(56, 189, 248, 0.65);
+      letter-spacing: 1.2px;
+    }
+
+    /* Leaderboard Box Styling */
+    .leaderboard-box {
+      background: #060a14;
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin: 10px 0;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(245, 158, 11, 0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 680px) {
+      body { font-size: 13px; }
+      #term-header { padding: 8px 12px; }
+      .brand-title { font-size: 13px; }
+      .brand-tag { display: none; }
+      .timer-badge { font-size: 13px; padding: 3px 8px; min-width: 75px; }
+      .ctrl-btn { padding: 4px 8px; font-size: 11px; }
+      #term-body { padding: 12px 14px; }
+      #term-input-row { padding: 10px 14px; }
+      .voucher-card::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="terminal-app">
+    <!-- Top System Header -->
+    <header id="term-header">
+      <div class="brand-title">
+        <span class="c-blood">⚡</span>
+        <span>ROOTFALL v7.0</span>
+        <span class="brand-tag">BREACH UNIT</span>
+      </div>
+
+      <div class="header-controls">
+        <div id="timer-display" class="timer-badge">[--:--]</div>
+        <button id="sound-btn" class="ctrl-btn" title="Ses Aç/Kapat">
+          <span id="sound-icon">🔊</span>
+          <span id="sound-label">SES: AÇIK</span>
+        </button>
+        <button id="reset-lb-btn" class="ctrl-btn" title="Liderlik Tablosunu Sıfırla" style="color: var(--amber-gold); border-color: rgba(245, 158, 11, 0.45);">
+          <span>🗑️</span>
+          <span>TABLOYU SIFIRLA</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Terminal Output Log -->
+    <main id="term-body" role="log" aria-live="polite">
+      <!-- Terminal output stream -->
+    </main>
+
+    <!-- Terminal Command Line -->
+    <footer id="term-input-row">
+      <span id="prompt-tag" class="prompt-label">SYS:ROOT &gt;</span>
+      <div class="input-wrapper">
+        <input
+          type="text"
+          id="term-input"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          placeholder="Komut veya yanıt giriniz..."
+        >
+      </div>
+      <span class="cursor-block"></span>
+    </footer>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       ROOTFALL v7.0 // CORE ENGINE & WEB AUDIO
+       ========================================================================== */
+
+    // --- WEB AUDIO API SYSTEM ---
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          audioCtx = new AudioCtx();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    // 1. playKeyBlip: Random pitch blip (700Hz - 1100Hz, 25ms)
+    function playKeyBlip() {
+      if (!soundEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = Math.random() > 0.5 ? 'triangle' : 'square';
+        const now = ctx.currentTime;
+        const freq = 700 + Math.random() * 400;
+        osc.frequency.setValueAtTime(freq, now);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.5, now + 0.025);
+        gain.gain.setValueAtTime(0.035, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.025);
+      } catch (e) {}
+    }
+
+    // 2. playErrorBuzz: Harsh dual-tone sawtooth wave (130Hz + 85Hz) with screen-shake
+    function playErrorBuzz() {
+      triggerScreenShake();
+      if (!soundEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      try {
+        const now = ctx.currentTime;
+        [130, 85].forEach((freq) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, now);
+          osc.frequency.setValueAtTime(freq * 0.9, now + 0.15);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.32);
+        });
+      } catch (e) {}
+    }
+
+    // 3. playPenaltySiren: Downward ramp alert (440Hz down to 220Hz)
+    function playPenaltySiren() {
+      triggerScreenShake();
+      if (!soundEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      try {
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.exponentialRampToValueAtTime(220, now + 0.38);
+        gain.gain.setValueAtTime(0.16, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.40);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.40);
+      } catch (e) {}
+    }
+
+    // 4. playStageClear: Ascending 3-chord chime (523Hz -> 659Hz -> 784Hz)
+    function playStageClear() {
+      if (!soundEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      try {
+        const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const startTime = ctx.currentTime + idx * 0.08;
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(0.09, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.18);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + 0.18);
+        });
+      } catch (e) {}
+    }
+
+    // 5. playVictoryFanfare: Multi-step triumphant 8-bit sequence
+    function playVictoryFanfare() {
+      if (!soundEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      try {
+        const notes = [
+          { f: 523.25, d: 0.12 }, // C5
+          { f: 659.25, d: 0.12 }, // E5
+          { f: 783.99, d: 0.12 }, // G5
+          { f: 1046.50, d: 0.22 }, // C6
+          { f: 880.00, d: 0.14 }, // A5
+          { f: 1046.50, d: 0.45 }  // C6
+        ];
+        let curr = ctx.currentTime + 0.05;
+        notes.forEach(n => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(n.f, curr);
+          gain.gain.setValueAtTime(0.08, curr);
+          gain.gain.exponentialRampToValueAtTime(0.001, curr + n.d);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(curr);
+          osc.stop(curr + n.d);
+          curr += n.d + 0.02;
+        });
+      } catch (e) {}
+    }
+
+    // 6. playTimerWarning: Two-tone radar/sonar warning (660Hz -> 880Hz) at 60s & 30s
+    function playTimerWarning() {
+      if (!soundEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      try {
+        const now = ctx.currentTime;
+        [660, 880].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const st = now + idx * 0.12;
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, st);
+          gain.gain.setValueAtTime(0.12, st);
+          gain.gain.exponentialRampToValueAtTime(0.001, st + 0.14);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(st);
+          osc.stop(st + 0.14);
+        });
+      } catch (e) {}
+    }
+
+    // 7. playTickPulse: Subtle high-tech tick pulse during the final 15 seconds
+    function playTickPulse() {
+      if (!soundEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      try {
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(1100, now);
+        osc.frequency.exponentialRampToValueAtTime(400, now + 0.018);
+        gain.gain.setValueAtTime(0.03, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.018);
+      } catch (e) {}
+    }
+
+    function triggerScreenShake() {
+      const app = document.getElementById('terminal-app');
+      app.classList.remove('screen-shake');
+      void app.offsetWidth;
+      app.classList.add('screen-shake');
+      setTimeout(() => app.classList.remove('screen-shake'), 380);
+    }
+
+    // --- LOCAL LEADERBOARD SYSTEM (localStorage) ---
+    const LEADERBOARD_STORAGE_KEY = "rootfall_lb";
+
+    // Old entries (pre-v7) have no difficulty; they were 75s runs, so they count as ORTA.
+    function getLeaderboard(diff) {
+      try {
+        const list = JSON.parse(localStorage.getItem(LEADERBOARD_STORAGE_KEY) || "[]");
+        if (Array.isArray(list)) {
+          return list
+            .filter(e => !diff || (e.diff || "ORTA") === diff)
+            .sort((a, b) => a.timeUsed - b.timeUsed);
+        }
+      } catch (e) {}
+      return [];
+    }
+
+    function saveScore(name, timeElapsed, fullKey, diff) {
+      try {
+        const board = getLeaderboard();
+        board.push({
+          name: name.trim(),
+          timeUsed: timeElapsed,
+          key: fullKey,
+          diff: diff,
+          date: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+        });
+        board.sort((a, b) => a.timeUsed - b.timeUsed);
+        localStorage.setItem(LEADERBOARD_STORAGE_KEY, JSON.stringify(board.slice(0, 150)));
+      } catch (e) {}
+    }
+
+    function resetLeaderboard() {
+      try {
+        localStorage.removeItem(LEADERBOARD_STORAGE_KEY);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function formatLeaderboardView(limit, diff) {
+      const board = getLeaderboard(diff);
+      const color = DIFFICULTY_CONFIG[diff].color;
+      const sep = `<div class="c-dim">------------------------------------------------------------</div>`;
+      let rows = `<div class="${color} bold">🏆 [LİDERLİK TABLOSU // ${diff} — ${DIFFICULTY_CONFIG[diff].time} SN]</div>` + sep;
+      if (board.length === 0) {
+        return rows + `<div class="c-dim">Henüz kayıtlı bir rekor yok. İlk kıran sen ol!</div>` + sep;
+      }
+      board.slice(0, limit).forEach((entry, idx) => {
+        const rank = (idx + 1).toString().padStart(2, ' ');
+        const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "  ";
+        const paddedName = (entry.name.length > 20 ? entry.name.substring(0, 18) + '..' : entry.name).padEnd(20, ' ');
+        rows += `<div><span class="c-cyan bold">${medal} #${rank}</span> | <span class="c-white bold">${escapeHtml(paddedName)}</span> | <span class="c-green bold">${entry.timeUsed} sn</span> <span class="c-dim">(${entry.date || ''})</span></div>`;
+      });
+      return rows + sep;
+    }
+
+    function printLeaderboard(diffs) {
+      const box = document.createElement('div');
+      box.className = 'leaderboard-box';
+      box.innerHTML = diffs.map(d => formatLeaderboardView(5, d)).join('<br>');
+      termBody.appendChild(box);
+      termBody.scrollTop = termBody.scrollHeight;
+      return box;
+    }
+
+    // --- GAME STATE MACHINE ---
+    const GAME_STATE = {
+      INIT_TYPING: "INIT_TYPING",
+      AWAIT_NAME: "AWAIT_NAME",
+      AWAIT_DIFFICULTY: "AWAIT_DIFFICULTY",
+      STAGE: "STAGE",
+      MASTER_KEY: "MASTER_KEY",
+      VICTORY: "VICTORY",
+      FAILED: "FAILED"
+    };
+
+    let currentState = GAME_STATE.INIT_TYPING;
+    let operatorName = "";
+    let selectedDifficulty = "ORTA";
+    let totalTime = 75;
+    let timeRemaining = 75;
+    let timerInterval = null;
+    let collectedFragments = []; // [key1, key2, key3]
+    let activeStages = [];       // [{ cat, q, key }] x3
+    let stageIndex = 0;
+    let hintUsed = false; // 'skip' unlocks after the hint of the current stage
+    let skipCount = 0;
+    let lastRun = { catKey: "", ids: [] }; // avoids repeating the previous run
+
+    // Command History
+    let commandHistory = [];
+    let historyIndex = -1;
+
+    // --- DIFFICULTY CONFIG (time is chosen by the player's difficulty) ---
+    const DIFFICULTY_CONFIG = {
+      KOLAY: { time: 60, skipCost: 10, color: "c-green" },
+      ORTA:  { time: 75, skipCost: 15, color: "c-amber" },
+      ZOR:   { time: 90, skipCost: 20, color: "c-blood" }
+    };
+    const DIFF_ALIASES = {
+      "1": "KOLAY", "KOLAY": "KOLAY", "EASY": "KOLAY", "E": "KOLAY",
+      "2": "ORTA",  "ORTA": "ORTA",   "MEDIUM": "ORTA", "M": "ORTA",
+      "3": "ZOR",   "ZOR": "ZOR",     "HARD": "ZOR",    "H": "ZOR"
+    };
+
+    // Key words handed out as rewards (3 random ones per run, independent of the questions)
+    const KEY_WORDS = ["ZERO", "NEO", "NEXUS", "CYBER", "GHOST", "PULSE", "PHANTOM", "SHADOW", "VORTEX",
+      "ACCESS", "SIGNAL", "PACKET", "VECTOR", "MATRIX", "UPLINK", "CIPHER", "SECTOR", "QUANTUM", "TOKEN",
+      "KERNEL", "DAEMON", "BEACON", "OVERRIDE", "POINTER", "STREAM", "RESOLVE", "BINARY", "FIREWALL"];
+
+    // --- CRYPTO HELPERS: encrypted text is generated, so it can never be mistyped ---
+    const spaced = (chars) => chars.join(' ');
+    const atbash = (w) => spaced([...w].map(c => String.fromCharCode(155 - c.charCodeAt(0))));
+    const reverse = (w) => spaced([...w].reverse());
+    const caesar = (w, n) => spaced([...w].map(c => String.fromCharCode((c.charCodeAt(0) - 65 + n) % 26 + 65)));
+
+    const G_ATBASH = [
+      "[*] REHBER: ATBASH — alfabe tersine çevrilmiştir (ilk harf ↔ son harf)",
+      "A↔Z | B↔Y | C↔X | D↔W | E↔V | F↔U | G↔T | H↔S | I↔R",
+      "J↔Q | K↔P | L↔O | M↔N | O↔L | P↔K | Q↔J | R↔I | S↔H",
+      "T↔G | U↔F | V↔E | W↔D | X↔C | Y↔B | Z↔A"
+    ];
+    const G_REVERSE = [
+      "[*] REHBER: AYNA ŞİFRESİ — harfler sağdan sola dizilmiştir",
+      "Örnek mantık: K C A T S  ➔  S-T-A-C-K"
+    ];
+    const G_CAESAR = (n) => [
+      `[*] REHBER: SEZAR +${n} — her harf alfabede ${n} adım ileri kaydırılmıştır`,
+      `Çözmek için her harfi ${n} adım GERİ al (A'dan öncesi Z'ye döner).`,
+      `Örnek (+${n}): ${caesar("D", n)} harfi D'nin şifreli halidir.`
+    ];
+    const G_BIN = [
+      "[*] REHBER: İKİLİK (BINARY) BASAMAK DÜZENİ",
+      "AĞIRLIKLAR: [ 8 - 4 - 2 - 1 ]   Örnek: 0110 = 4 + 2 = 6  |  1001 = 8 + 1 = 9"
+    ];
+    const G_HEX = [
+      "[*] REHBER: HEXADECIMAL (16'LIK TABAN)",
+      "0-9 standart, A=10, B=11, C=12, D=13, E=14, F=15   |   0x1B = 1×16 + 11"
+    ];
+    const G_RWX = [
+      "[*] REHBER: DOSYA İZİNLERİ",
+      "r=4, w=2, x=1 — her grup (kullanıcı/grup/diğer) için değerler toplanır."
+    ];
+    const G_HOSTS = [
+      "[*] REHBER: ALT AĞ (SUBNET)",
+      "Kullanılabilir host sayısı = 2^(32 - önek) - 2   (ağ ve broadcast adresi düşülür)"
+    ];
+    const G_GATES = [
+      "[*] REHBER: MANTIK KAPILARI",
+      "AND: ikisi de 1 ise 1 | OR: biri 1 ise 1 | XOR: farklıysa 1 | NOT: tersler",
+      "Çok bitli işlemlerde her basamak kendi arasında hesaplanır."
+    ];
+    const G_TABLE3 = [
+      "[*] REHBER: 3 GİRİŞLİ DOĞRULUK TABLOSU",
+      "A, B, C girişleri 2×2×2 = 8 farklı satır oluşturur. Cevap: ifadenin 1 çıktığı satır sayısı."
+    ];
+
+    // q(id, question, answers[], hint, extras)
+    const q = (id, text, a, hint, extra = {}) => ({ id, text, a, hint, ...extra });
+
+    // --- CATEGORIES: 6 categories x 3 difficulties x 4 questions = 72 puzzles ---
+    const CATEGORIES = [
+      {
+        id: "CR", icon: "🔐", title: "KRİPTANALİZ", placeholder: "Deşifre edilen kelimeyi yazınız...",
+        Q: {
+          KOLAY: [
+            q("CR-E1", `Atbash şifreli kelime: ${atbash("CODE")}`, ["CODE"], "Her harfin tablodaki karşılığını bulup sırayla birleştir.", { guide: G_ATBASH }),
+            q("CR-E2", `Atbash şifreli kelime: ${atbash("HACK")}`, ["HACK"], "İlk harften başla: tablodaki eşini bul, sonra sıradaki harfe geç.", { guide: G_ATBASH }),
+            q("CR-E3", `Atbash şifreli kelime: ${atbash("ROOT")}`, ["ROOT"], "Tabloda iki yönlü eşleşme var; her harfi tek tek çevir.", { guide: G_ATBASH }),
+            q("CR-E4", `Atbash şifreli kelime: ${atbash("BYTE")}`, ["BYTE"], "Alfabenin başı ile sonu birbirinin eşidir; ortaya doğru ilerler.", { guide: G_ATBASH }),
+            q("CR-E5", `Atbash şifreli kelime: ${atbash("LOCK")}`, ["LOCK"], "Her harfi tablodan tek tek çevir; 4 harfli bir güvenlik kelimesi.", { guide: G_ATBASH }),
+            q("CR-E6", `Atbash şifreli kelime: ${atbash("DATA")}`, ["DATA"], "Her harfi tablodan çevir; 2. ve 4. harf aynı.", { guide: G_ATBASH }),
+            q("CR-E7", `Atbash şifreli kelime: ${atbash("USER")}`, ["USER"], "Her harfi tablodan çevir; sisteme giriş yapan kişi.", { guide: G_ATBASH })
+          ],
+          ORTA: [
+            q("CR-M1", `Ayna şifreli kelime: ${reverse("PASSWORD")}`, ["PASSWORD"], "Harfleri son harften başlayarak geriye doğru oku.", { guide: G_REVERSE }),
+            q("CR-M2", `Ayna şifreli kelime: ${reverse("TUNNEL")}`, ["TUNNEL"], "En sondaki harf kelimenin ilk harfidir.", { guide: G_REVERSE }),
+            q("CR-M3", `Atbash şifreli kelime: ${atbash("PROXY")}`, ["PROXY"], "Her harfi tablodan çevir; 5 harfli bir ağ terimi çıkacak.", { guide: G_ATBASH }),
+            q("CR-M4", `Atbash şifreli kelime: ${atbash("SERVER")}`, ["SERVER"], "Her harfi tablodan çevir; 6 harfli bir bilişim terimi çıkacak.", { guide: G_ATBASH }),
+            q("CR-M5", `Ayna şifreli kelime: ${reverse("SECURITY")}`, ["SECURITY"], "Son harften başlayıp geriye doğru oku.", { guide: G_REVERSE }),
+            q("CR-M6", `Ayna şifreli kelime: ${reverse("MALWARE")}`, ["MALWARE"], "Son harften başlayıp geriye doğru oku; zararlı yazılım.", { guide: G_REVERSE }),
+            q("CR-M7", `Atbash şifreli kelime: ${atbash("ADMIN")}`, ["ADMIN"], "Her harfi tablodan çevir; sistem yöneticisi.", { guide: G_ATBASH })
+          ],
+          ZOR: [
+            q("CR-H1", `Sezar (+3) şifreli kelime: ${caesar("HELLO", 3)}`, ["HELLO"], "Her harfi 3 adım geriye al.", { guide: G_CAESAR(3) }),
+            q("CR-H2", `Sezar (+5) şifreli kelime: ${caesar("BINARY", 5)}`, ["BINARY"], "Her harfi 5 adım geriye al; baştaki harflere dikkat.", { guide: G_CAESAR(5) }),
+            q("CR-H3", `Sezar (+4) şifreli kelime: ${caesar("FIREWALL", 4)}`, ["FIREWALL"], "Her harfi 4 adım geriye al; 8 harfli bir güvenlik terimi.", { guide: G_CAESAR(4) }),
+            q("CR-H4", `Sezar (+7) şifreli kelime: ${caesar("NETWORK", 7)}`, ["NETWORK"], "Her harfi 7 adım geriye al; A'nın gerisinde Z'ye dönebilirsin.", { guide: G_CAESAR(7) }),
+            q("CR-H5", `Sezar (+3) şifreli kelime: ${caesar("PYTHON", 3)}`, ["PYTHON"], "Her harfi 3 adım geri al; 6 harfli bir programlama dili.", { guide: G_CAESAR(3) }),
+            q("CR-H6", `Sezar (+2) şifreli kelime: ${caesar("SOCKET", 2)}`, ["SOCKET"], "Her harfi 2 adım geri al; ağ programlama terimi.", { guide: G_CAESAR(2) }),
+            q("CR-H7", `Sezar (+6) şifreli kelime: ${caesar("LINUX", 6)}`, ["LINUX"], "Her harfi 6 adım geri al; açık kaynak işletim sistemi.", { guide: G_CAESAR(6) })
+          ]
+        }
+      },
+      {
+        id: "NS", icon: "🔢", title: "SAYI SİSTEMLERİ", placeholder: "Sonucu giriniz...",
+        Q: {
+          KOLAY: [
+            q("NS-E1", "0100 + 0011 = ?  (onluk veya ikilik yazabilirsin)", ["7", "0111", "111"], "Önce ikilik sayıları onluğa çevir, sonra topla.", { guide: G_BIN }),
+            q("NS-E2", "1010 ikilik sayısı onluk sistemde kaçtır?", ["10"], "1 olan basamakların ağırlıklarını topla.", { guide: G_BIN }),
+            q("NS-E3", "8 bitlik veri bloğu kaç Byte eder?", ["1", "1BYTE", "1BAYT"], "Temel veri birimi bit ile byte arasındaki oranı düşün.", { guide: ["[*] REHBER: VERİ BİRİMLERİ", "bit < Byte < KB < MB — her birim bir öncekinin katıdır."] }),
+            q("NS-E4", "13 onluk sayısının 4 bitlik ikilik karşılığı nedir?", ["1101"], "Toplamı 13 yapan 8-4-2-1 ağırlıklarına 1, diğerlerine 0 yaz.", { guide: G_BIN }),
+            q("NS-E5", "0110 ikilik sayısı onluk sistemde kaçtır?", ["6"], "1 olan basamakların ağırlıklarını topla.", { guide: G_BIN }),
+            q("NS-E6", "1 Byte kaç bit eder?", ["8"], "Byte, bitlerden oluşan temel veri birimidir; 2'nin bir kuvveti.", { guide: ["[*] REHBER: VERİ BİRİMLERİ", "bit < Byte < KB < MB — her birim bir öncekinin katıdır."] }),
+            q("NS-E7", "0001 + 0010 = ?  (onluk veya ikilik yazabilirsin)", ["3", "0011", "11"], "Önce iki sayıyı onluğa çevir, sonra topla.", { guide: G_BIN })
+          ],
+          ORTA: [
+            q("NS-M1", "0x0F hexadecimal değeri onluk olarak kaçtır?", ["15"], "Hex cetvelinde F harfinin değerini bul.", { guide: G_HEX }),
+            q("NS-M2", "1000 + 0101 = ?  (onluk veya ikilik yazabilirsin)", ["13", "1101"], "İkilik sayıları onluğa çevirip topla veya basamak basamak topla.", { guide: G_BIN }),
+            q("NS-M3", "5 onluk sayısının 4 bitlik ikilik karşılığı nedir?", ["0101", "101"], "Toplamı 5 yapan basamaklara 1, diğerlerine 0 yaz.", { guide: G_BIN }),
+            q("NS-M4", "0x1A hexadecimal değeri onluk olarak kaçtır?", ["26"], "Soldaki basamak 16 ile, sağdaki basamak 1 ile çarpılır.", { guide: G_HEX }),
+            q("NS-M5", "0x14 hexadecimal değeri onluk olarak kaçtır?", ["20"], "Soldaki basamak 16 ile, sağdaki basamak 1 ile çarpılır.", { guide: G_HEX }),
+            q("NS-M6", "11 onluk sayısının 4 bitlik ikilik karşılığı nedir?", ["1011"], "Toplamı 11 yapan 8-4-2-1 ağırlıklarına 1, diğerlerine 0 yaz.", { guide: G_BIN }),
+            q("NS-M7", "0101 + 0110 = ?  (onluk veya ikilik yazabilirsin)", ["11", "1011"], "İki sayıyı ayrı ayrı onluğa çevirip topla.", { guide: G_BIN })
+          ],
+          ZOR: [
+            q("NS-H1", "1010 AND 1100 bitwise işleminin sonucu nedir?  (ikilik veya onluk)", ["1000", "8"], "Yalnızca her iki sayıda da 1 olan basamak 1 kalır.", { guide: G_GATES }),
+            q("NS-H2", "0x0A + 0x06 = ?  (onluk karşılığını yaz)", ["16", "0X10"], "A harfinin değerini bulup 6 ile topla.", { guide: G_HEX }),
+            q("NS-H3", "0011 ikilik sayısı 1 bit sola kaydırılırsa (<< 1) onluk değeri kaç olur?", ["6", "0110", "110"], "Sola 1 bit kaydırmak sayıyı 2 ile çarpar.", { guide: ["[*] REHBER: BİT KAYDIRMA", "Sola n bit kaydırmak = sayıyı 2^n ile çarpmak."] }),
+            q("NS-H4", "0xFF onluk olarak kaçtır?", ["255"], "Her iki basamak da en büyük değerde: 15×16 + 15.", { guide: G_HEX }),
+            q("NS-H5", "1100 OR 1010 bitwise işleminin sonucu nedir?  (ikilik veya onluk)", ["1110", "14"], "Basamaklardan en az biri 1 ise sonuç 1 olur.", { guide: G_GATES }),
+            q("NS-H6", "0101 ikilik sayısı 2 bit sola kaydırılırsa (<< 2) onluk değeri kaç olur?", ["20", "10100"], "Önce sayıyı onluğa çevir, sonra 2 bit kaydırmanın çarpanını uygula.", { guide: ["[*] REHBER: BİT KAYDIRMA", "Sola n bit kaydırmak = sayıyı 2^n ile çarpmak."] }),
+            q("NS-H7", "0x10 - 0x01 = ?  (onluk karşılığını yaz)", ["15", "0X0F", "0XF"], "0x10 sayısının onluk değerini bul, 1 çıkar.", { guide: G_HEX })
+          ]
+        }
+      },
+      {
+        id: "CB", icon: "🐛", title: "C / C++ HATA AVI", placeholder: "Düzeltmeyi yazınız...",
+        Q: {
+          KOLAY: [
+            q("CB-E1", "1. satırın sonunda eksik olan karakter nedir?", [";", "SEMICOLON", "NOKTALIVIRGUL"], "C ve C++'ta her deyim özel bir noktalama işaretiyle biter.", { lang: "C", code: ["1 | int token = 1", "2 | return token;"] }),
+            q("CB-E2", "Bloğu kapatmak için 3. satıra hangi karakter gelmelidir?", ["}"], "Açılan süslü parantezin eşini yaz.", { lang: "C++", code: ["1 | if (access == 1) {", "2 |     allow_login();", "3 | "] }),
+            q("CB-E3", "std::cout için '>>' yerine hangi operatör kullanılmalıdır?", ["<<"], "cin ve cout okları zıt yönlüdür.", { lang: "C++", code: ["1 | #include <iostream>", "2 | std::cout >> \"ACCESS GRANTED\";"] }),
+            q("CB-E4", "for satırında eksik olan kapanış karakteri nedir?", [")"], "Açılan parantezin eşini unutmuşuz.", { lang: "C", code: ["1 | for (int i = 0; i < 3; i++ {", "2 |     puts(\"scan\");", "3 | }"] }),
+            q("CB-E5", "1. satırda eksik olan kapanış karakteri nedir?", ["]"], "Dizi boyutunu açan köşeli parantezin eşi yok.", { lang: "C", code: ["1 | int arr[3 = {1, 2, 3};"] }),
+            q("CB-E6", "1. satırın sonunda eksik olan karakter nedir?", [">"], "Açılan açılı parantezin eşini yaz.", { lang: "C", code: ["1 | #include <stdio.h", "2 | int main() { return 0; }"] }),
+            q("CB-E7", "std::cin için '<<' yerine hangi operatör kullanılmalıdır?", [">>"], "Veri klavyeden değişkene doğru akar; ok yönünü düşün.", { lang: "C++", code: ["1 | int pin;", "2 | std::cin << pin;"] })
+          ],
+          ORTA: [
+            q("CB-M1", "scanf'in çalışması için 'pin' önüne hangi operatör eklenmelidir?", ["&"], "scanf değişkenin değerini değil bellekteki yerini ister.", { lang: "C", code: ["1 | int pin;", "2 | scanf(\"%d\", pin); // Segmentation Fault!"] }),
+            q("CB-M2", "Sistemin açılması için '<' yerine hangi operatör gelmelidir?", [">", ">="], "Pil seviyesi 0'dan BÜYÜK olduğunda açılmalı.", { lang: "C", code: ["1 | int battery_level = 85;", "2 | if (battery_level < 0) {", "3 |     allow_boot = 1;", "4 | }"] }),
+            q("CB-M3", "Dizinin ilk elemanına (10) erişmek için '1' yerine hangi indeks yazılmalıdır?", ["0", "SIFIR"], "C ve C++ dizilerinde sayma kaçtan başlar?", { lang: "C++", code: ["1 | int levels[] = {10, 20, 30};", "2 | int first = levels[1];"] }),
+            q("CB-M4", "Döngünün bitmesi için gövdeye hangi ifade eklenmelidir?  (örn. sayaç artırma)", ["I++", "++I", "I+=1", "I=I+1"], "Şu an koşul hiçbir zaman yanlış olmuyor; sayaç değişmeli.", { lang: "C", code: ["1 | int i = 0;", "2 | while (i < 3) {", "3 |     puts(\"retry\");", "4 | }"] }),
+            q("CB-M5", "Ondalıklı sayıyı yazdırmak için %d yerine hangi format belirteci kullanılmalıdır?", ["%F", "%LF"], "d tam sayı içindir; ondalıklı (float) sayının baş harfini düşün.", { lang: "C", code: ["1 | float pi = 3.14;", "2 | printf(\"%d\", pi);"] }),
+            q("CB-M6", "3 elemanlı dizinin son geçerli indeksi kaçtır?", ["2"], "İndeksler 0'dan başlarsa 3 eleman hangi sayıda biter?", { lang: "C", code: ["1 | int a[3];", "2 | a[3] = 7; // taşma!"] }),
+            q("CB-M7", "Döngünün bitmesi için i-- yerine ne yazılmalıdır?", ["I++", "++I", "I+=1", "I=I+1"], "Sayaç 3'e ulaşmalı ama şu an uzaklaşıyor.", { lang: "C", code: ["1 | for (int i = 0; i < 3; i--) {", "2 |     puts(\"scan\");", "3 | }"] })
+          ],
+          ZOR: [
+            q("CB-H1", "Eşitlik kontrolü için tek '=' yerine ne yazılmalıdır?", ["=="], "Karşılaştırma ve atama farklı operatörlerdir.", { lang: "C", code: ["1 | int auth_level = 0;", "2 | if (auth_level = 4) {", "3 |     grant_root_access();", "4 | }"] }),
+            q("CB-H2", "İşaretçinin gösterdiği değere erişmek için 'ptr' önüne hangi operatör konmalıdır?", ["*"], "Adresi değil, adresin içindeki veriyi okumak istiyoruz.", { lang: "C", code: ["1 | int val = 42;", "2 | int *ptr = &val;", "3 | int read_val = ptr;"] }),
+            q("CB-H3", "'new' ile ayrılan belleği serbest bırakmak için hangi C++ anahtar kelimesi kullanılır?", ["DELETE", "DELETE[]"], "C'deki free'nin C++ dünyasındaki karşılığı.", { lang: "C++", code: ["1 | int* buffer = new int[128];", "2 | // ... işlemler ...", "3 | ???(buffer);"] }),
+            q("CB-H4", "Her case'in sonuna, alttaki case'lere düşmeyi engelleyen hangi anahtar kelime konmalıdır?", ["BREAK", "BREAK;"], "switch'ten çıkış yapan deyim.", { lang: "C", code: ["1 | switch (level) {", "2 |   case 1: puts(\"low\");", "3 |   case 2: puts(\"high\");", "4 | }"] }),
+            q("CB-H5", "Mantıksal VE için tek '&' yerine ne yazılmalıdır?", ["&&"], "Tek sembol bitwise işlemdir; mantıksal işlem çift semboldür.", { lang: "C", code: ["1 | if (x > 0 & y > 0) {", "2 |     open_gate();", "3 | }"] }),
+            q("CB-H6", "Fonksiyonun başına hangi dönüş tipi yazılmalıdır?", ["INT"], "Fonksiyon iki tam sayının toplamını döndürüyor.", { lang: "C", code: ["1 | sum(int a, int b) {", "2 |     return a + b;", "3 | }"] }),
+            q("CB-H7", "Sınıf tanımında 3. satırdaki } işaretinden sonra eksik olan karakter nedir?", [";"], "C++'ta class ve struct tanımları özel bir noktalamayla biter.", { lang: "C++", code: ["1 | class User {", "2 |     int id;", "3 | }", "4 | int main() { return 0; }"] })
+          ]
+        }
+      },
+      {
+        id: "CO", icon: "🖥️", title: "ÇIKTI TAHMİNİ", placeholder: "Programın çıktısını yazınız...",
+        Q: {
+          KOLAY: [
+            q("CO-E1", "Kod çalışınca ekrana ne yazdırır?", ["7"], "x'in değeri adım adım nasıl değişiyor, takip et.", { lang: "C", code: ["1 | int x = 4;", "2 | x += 3;", "3 | printf(\"%d\", x);"] }),
+            q("CO-E2", "Kod çalışınca ekrana ne yazdırır?", ["3"], "Tam sayı bölmesi: ne kadar tam sığıyor?", { lang: "C", code: ["1 | int a = 6, b = 2;", "2 | printf(\"%d\", a / b);"] }),
+            q("CO-E3", "Kod çalışınca ekrana ne yazdırır?", ["10"], "s'ye iki kez aynı sayıyı ekliyoruz.", { lang: "C++", code: ["1 | int s = 0;", "2 | s = s + 5;", "3 | s = s + 5;", "4 | std::cout << s;"] }),
+            q("CO-E4", "Kod çalışınca ekrana ne yazdırır?", ["4"], "i++ değişkeni bir artırır.", { lang: "C", code: ["1 | int i = 3;", "2 | i++;", "3 | printf(\"%d\", i);"] }),
+            q("CO-E5", "Kod çalışınca ekrana ne yazdırır?", ["5"], "a'nın değerinin adım adım nasıl değiştiğini takip et.", { lang: "C", code: ["1 | int a = 9;", "2 | a -= 4;", "3 | printf(\"%d\", a);"] }),
+            q("CO-E6", "Kod çalışınca ekrana ne yazdırır?", ["6"], "Önce sağ taraf hesaplanır, sonra x'e atanır.", { lang: "C", code: ["1 | int x = 2 * 3;", "2 | printf(\"%d\", x);"] }),
+            q("CO-E7", "Kod çalışınca ekrana ne yazdırır?", ["4"], "a'nın yarısı a'ya geri atanıyor.", { lang: "C++", code: ["1 | int a = 8;", "2 | a = a / 2;", "3 | std::cout << a;"] })
+          ],
+          ORTA: [
+            q("CO-M1", "Kod çalışınca ekrana ne yazdırır?", ["3"], "İki tam sayının bölümü küsurat taşımaz.", { lang: "C", code: ["1 | printf(\"%d\", 7 / 2);"] }),
+            q("CO-M2", "Kod çalışınca ekrana ne yazdırır?", ["1"], "% operatörü bölümden kalanı verir.", { lang: "C", code: ["1 | printf(\"%d\", 10 % 3);"] }),
+            q("CO-M3", "Kod çalışınca ekrana ne yazdırır?", ["10"], "Önce çarpma, sonra toplama.", { lang: "C++", code: ["1 | int a = 3;", "2 | int b = a * a + 1;", "3 | std::cout << b;"] }),
+            q("CO-M4", "Kod çalışınca ekrana ne yazdırır?", ["23"], "Dizi indeksleri 0'dan başlar; arr[1] ve arr[2]'yi bul.", { lang: "C", code: ["1 | int arr[] = {4, 8, 15};", "2 | printf(\"%d\", arr[1] + arr[2]);"] }),
+            q("CO-M5", "Kod çalışınca ekrana ne yazdırır?", ["2"], "% operatörü bölümden kalanı verir.", { lang: "C", code: ["1 | printf(\"%d\", 17 % 5);"] }),
+            q("CO-M6", "Kod çalışınca ekrana ne yazdırır?", ["10"], "Önce koşulun doğru mu yanlış mı olduğuna bak.", { lang: "C", code: ["1 | int x = 5;", "2 | if (x > 3) x = x * 2;", "3 | else x = 0;", "4 | printf(\"%d\", x);"] }),
+            q("CO-M7", "Kod çalışınca ekrana ne yazdırır?", ["14"], "İşlem önceliği: çarpma toplamadan önce yapılır.", { lang: "C++", code: ["1 | int a = 2 + 3 * 4;", "2 | std::cout << a;"] })
+          ],
+          ZOR: [
+            q("CO-H1", "Kod çalışınca ekrana ne yazdırır?", ["5"], "i++ (post-increment) önce değeri kullanır, sonra artırır.", { lang: "C", code: ["1 | int i = 5;", "2 | printf(\"%d\", i++);"] }),
+            q("CO-H2", "Kod çalışınca ekrana ne yazdırır?", ["6"], "++i (pre-increment) önce artırır, sonra değeri kullanır.", { lang: "C", code: ["1 | int i = 5;", "2 | printf(\"%d\", ++i);"] }),
+            q("CO-H3", "Kod çalışınca ekrana ne yazdırır?", ["10"], "Döngü hangi i değerleri için kaç kez çalışıyor?", { lang: "C++", code: ["1 | int s = 0;", "2 | for (int i = 1; i <= 4; i++)", "3 |     s += i;", "4 | std::cout << s;"] }),
+            q("CO-H4", "Kod çalışınca ekrana ne yazdırır?", ["3"], "7'yi ikilik yaz, 3 ile basamak basamak AND'le.", { lang: "C", code: ["1 | int x = 7;", "2 | printf(\"%d\", x & 3);"] }),
+            q("CO-H5", "Kod çalışınca ekrana ne yazdırır?", ["12"], "i'nin aldığı değerleri sırayla yaz; koşul ne zaman bozuluyor?", { lang: "C", code: ["1 | int i = 0;", "2 | while (i < 10)", "3 |     i += 3;", "4 | printf(\"%d\", i);"] }),
+            q("CO-H6", "Kod çalışınca ekrana ne yazdırır?", ["8"], "Sola kaydırma her adımda sayıyı ikiye katlar.", { lang: "C", code: ["1 | int x = 1;", "2 | x = x << 3;", "3 | printf(\"%d\", x);"], ...{ guide: ["[*] REHBER: BİT KAYDIRMA", "Sola n bit kaydırmak = sayıyı 2^n ile çarpmak."] } }),
+            q("CO-H7", "Kod çalışınca ekrana ne yazdırır?", ["6"], "Döngü i'yi 2'şer artırıyor; hangi i değerleri toplanıyor?", { lang: "C++", code: ["1 | int s = 0;", "2 | for (int i = 0; i < 5; i += 2)", "3 |     s += i;", "4 | std::cout << s;"] })
+          ]
+        }
+      },
+      {
+        id: "LG", icon: "⚡", title: "MANTIK KAPILARI", placeholder: "Sonucu giriniz...",
+        Q: {
+          KOLAY: [
+            q("LG-E1", "1 AND 0 = ?", ["0"], "AND yalnızca iki giriş de 1 iken 1 verir.", { guide: G_GATES }),
+            q("LG-E2", "1 OR 0 = ?", ["1"], "OR, girişlerden en az biri 1 ise 1 verir.", { guide: G_GATES }),
+            q("LG-E3", "NOT 1 = ?", ["0"], "NOT girişi tersine çevirir.", { guide: G_GATES }),
+            q("LG-E4", "1 AND 1 = ?", ["1"], "İki giriş de 1 olduğunda AND kapısı ne yapar?", { guide: G_GATES }),
+            q("LG-E5", "0 OR 0 = ?", ["0"], "OR için en az bir girişin 1 olması gerekir.", { guide: G_GATES }),
+            q("LG-E6", "NOT 0 = ?", ["1"], "NOT girişi tersine çevirir.", { guide: G_GATES }),
+            q("LG-E7", "1 XOR 0 = ?", ["1"], "XOR girişler farklıyken ne verir?", { guide: G_GATES })
+          ],
+          ORTA: [
+            q("LG-M1", "1100 OR 0011 = ?  (ikilik yaz)", ["1111"], "Her basamak çiftine OR uygula.", { guide: G_GATES }),
+            q("LG-M2", "NOT 1010 = ?  (4 bit, ikilik yaz)", ["0101", "101"], "4 basamağın her birini ters çevir.", { guide: G_GATES }),
+            q("LG-M3", "1011 XOR 0110 = ?  (ikilik yaz)", ["1101"], "Basamaklar farklıysa 1, aynıysa 0.", { guide: G_GATES }),
+            q("LG-M4", "1101 AND 1011 = ?  (ikilik yaz)", ["1001"], "Yalnızca ikisinde de 1 olan basamaklar 1 kalır.", { guide: G_GATES }),
+            q("LG-M5", "1010 AND 0110 = ?  (ikilik yaz)", ["0010", "10"], "Yalnızca ikisinde de 1 olan basamaklar 1 kalır.", { guide: G_GATES }),
+            q("LG-M6", "1111 XOR 1010 = ?  (ikilik yaz)", ["0101", "101"], "Basamaklar farklıysa 1, aynıysa 0.", { guide: G_GATES }),
+            q("LG-M7", "NOT 0011 = ?  (4 bit, ikilik yaz)", ["1100"], "4 basamağın her birini ters çevir.", { guide: G_GATES })
+          ],
+          ZOR: [
+            q("LG-H1", "(A AND B) OR C ifadesi, A-B-C'nin 8 farklı kombinasyonunun kaçında 1 verir?", ["5"], "C=1 olan satırları ve C=0 iken A AND B=1 olan satırları say.", { guide: G_TABLE3 }),
+            q("LG-H2", "(A OR B) AND C ifadesi 8 kombinasyonun kaçında 1 verir?", ["3"], "C=1 olmak zorunda; o satırlarda A OR B'nin 1 olduğunu say.", { guide: G_TABLE3 }),
+            q("LG-H3", "A XOR B XOR C ifadesi 8 kombinasyonun kaçında 1 verir?", ["4"], "Tek sayıda 1 içeren giriş satırlarını say.", { guide: G_TABLE3 }),
+            q("LG-H4", "A AND B AND C ifadesi 8 kombinasyonun kaçında 0 verir?", ["7"], "Kaç satırda 1 verir? Toplamdan çıkar.", { guide: G_TABLE3 }),
+            q("LG-H5", "A=1, B=0, C=1 için (A AND B) OR (NOT C) = ?", ["0"], "Önce parantezleri ayrı ayrı hesapla, sonra OR uygula.", { guide: G_GATES }),
+            q("LG-H6", "A=0, B=1, C=1 için NOT(A OR B) OR (B AND C) = ?", ["1"], "İçteki parantezlerden başla; NOT en son içteki sonuca uygulanır.", { guide: G_GATES }),
+            q("LG-H7", "A OR B ifadesi, A-B'nin 4 farklı kombinasyonunun kaçında 1 verir?", ["3"], "00, 01, 10, 11 satırlarını tek tek dene.", { guide: G_GATES })
+          ]
+        }
+      },
+      {
+        id: "LN", icon: "🐧", title: "LINUX VE AĞ", placeholder: "Cevabı yazınız...",
+        Q: {
+          KOLAY: [
+            q("LN-E1", "Bulunduğun klasörün içeriğini listeleyen Linux komutu nedir?", ["LS"], "İki harfli, 'listele' fikrinin kısaltması.", { guide: ["[*] REHBER: LINUX TEMEL KOMUTLAR", "Komutlar küçük harfle ve genelde kısadır."] }),
+            q("LN-E2", "Başka bir klasöre geçmek için kullanılan Linux komutu nedir?", ["CD"], "İngilizce 'change directory' ifadesinin kısaltması.", { guide: ["[*] REHBER: LINUX TEMEL KOMUTLAR", "Komutlar küçük harfle ve genelde kısadır."] }),
+            q("LN-E3", "Bir dosyayı silmek için kullanılan Linux komutu nedir?", ["RM"], "İngilizce 'remove' kelimesinin kısaltması.", { guide: ["[*] REHBER: LINUX TEMEL KOMUTLAR", "Komutlar küçük harfle ve genelde kısadır."] }),
+            q("LN-E4", "Bir sunucunun ulaşılabilir olup olmadığını test eden komut nedir?", ["PING"], "Sonar benzeri bir paket gönderip yanıt süresini ölçer.", { guide: ["[*] REHBER: AĞ ARAÇLARI", "Bu komut ICMP paketleri gönderir."] }),
+            q("LN-E5", "Bir dosyanın içeriğini ekrana yazdıran Linux komutu nedir?", ["CAT"], "'concatenate' (birleştirmek) kelimesinin ilk 3 harfi.", { guide: ["[*] REHBER: LINUX TEMEL KOMUTLAR", "Komutlar küçük harfle ve genelde kısadır."] }),
+            q("LN-E6", "Yeni bir klasör oluşturan Linux komutu nedir?", ["MKDIR"], "'make directory' ifadesinin kısaltması.", { guide: ["[*] REHBER: LINUX TEMEL KOMUTLAR", "Komutlar küçük harfle ve genelde kısadır."] }),
+            q("LN-E7", "Bir komutu yönetici (root) yetkisiyle çalıştırmak için başına yazılan komut nedir?", ["SUDO"], "'superuser do' ifadesinin kısaltması.", { guide: ["[*] REHBER: LINUX TEMEL KOMUTLAR", "Komutlar küçük harfle ve genelde kısadır."] })
+          ],
+          ORTA: [
+            q("LN-M1", "SSH'ın varsayılan port numarası kaçtır?", ["22"], "Telnet'in güvenli halefi; telnet portunun bir öncesi.", { guide: ["[*] REHBER: PORTLAR", "Port numaraları 0-65535 arasındadır; bilinen servisler 1024'ün altındadır."] }),
+            q("LN-M2", "HTTPS'in varsayılan port numarası kaçtır?", ["443"], "Güvenli web trafiği; HTTP'nin (80) TLS'li kardeşi.", { guide: ["[*] REHBER: PORTLAR", "Port numaraları 0-65535 arasındadır; bilinen servisler 1024'ün altındadır."] }),
+            q("LN-M3", "DNS sorgularının varsayılan port numarası kaçtır?", ["53"], "Alan adlarını IP adreslerine çeviren servis; 50'li sayılardan biri.", { guide: ["[*] REHBER: PORTLAR", "Port numaraları 0-65535 arasındadır; bilinen servisler 1024'ün altındadır."] }),
+            q("LN-M4", "Bulunduğun dizinin tam yolunu yazdıran Linux komutu nedir?", ["PWD"], "'print working directory' ifadesinin kısaltması.", { guide: ["[*] REHBER: LINUX TEMEL KOMUTLAR", "Komutlar küçük harfle ve genelde kısadır."] }),
+            q("LN-M5", "HTTP'nin varsayılan port numarası kaçtır?", ["80"], "Şifresiz web trafiği; iki haneli, sıfırla biten bir sayı.", { guide: ["[*] REHBER: PORTLAR", "Port numaraları 0-65535 arasındadır; bilinen servisler 1024'ün altındadır."] }),
+            q("LN-M6", "Bir dosyayı taşıyan veya yeniden adlandıran Linux komutu nedir?", ["MV"], "'move' kelimesinin kısaltması.", { guide: ["[*] REHBER: LINUX TEMEL KOMUTLAR", "Komutlar küçük harfle ve genelde kısadır."] }),
+            q("LN-M7", "Bir dosya içinde kelime arayan Linux komutu nedir?", ["GREP"], "'global regular expression print' baş harfleri.", { guide: ["[*] REHBER: LINUX TEMEL KOMUTLAR", "Komutlar küçük harfle ve genelde kısadır."] })
+          ],
+          ZOR: [
+            q("LN-H1", "rwx r-x r-- izinlerinin chmod karşılığı (3 haneli) nedir?", ["754"], "Her grubu ayrı ayrı topla: kullanıcı, grup, diğer.", { guide: G_RWX }),
+            q("LN-H2", "192.168.1.0/24 ağında kullanılabilir host sayısı kaçtır?", ["254"], "Host bitleri sayısı 8; ağ ve broadcast adreslerini çıkar.", { guide: G_HOSTS }),
+            q("LN-H3", "192.168.1.0/26 ağında kullanılabilir host sayısı kaçtır?", ["62"], "Host bitleri sayısı 6; iki adresi çıkarmayı unutma.", { guide: G_HOSTS }),
+            q("LN-H4", "10.0.0.0/30 ağında kullanılabilir host sayısı kaçtır?", ["2"], "Host bitleri sayısı 2; 4 adresin ikisi ayrılmış.", { guide: G_HOSTS }),
+            q("LN-H5", "rw- r-- r-- izinlerinin chmod karşılığı (3 haneli) nedir?", ["644"], "Her grubu ayrı ayrı topla: kullanıcı, grup, diğer.", { guide: G_RWX }),
+            q("LN-H6", "rwx rwx r-x izinlerinin chmod karşılığı (3 haneli) nedir?", ["775"], "Her grubu ayrı ayrı topla; ilk ikisi aynı.", { guide: G_RWX }),
+            q("LN-H7", "192.168.0.0/28 ağında kullanılabilir host sayısı kaçtır?", ["14"], "Host bitleri sayısı 4; iki adresi çıkarmayı unutma.", { guide: G_HOSTS })
+          ]
+        }
+      }
+    ];
+
+    // --- DOM REFERENCES ---
+    const termBody = document.getElementById('term-body');
+    const termInput = document.getElementById('term-input');
+    const promptTag = document.getElementById('prompt-tag');
+    const timerDisplay = document.getElementById('timer-display');
+    const soundBtn = document.getElementById('sound-btn');
+    const soundIcon = document.getElementById('sound-icon');
+    const soundLabel = document.getElementById('sound-label');
+
+    // --- TERMINAL PRINT HELPERS ---
+    function printLine(htmlContent, className = "") {
+      const line = document.createElement('div');
+      line.className = `term-line ${className}`;
+      line.innerHTML = htmlContent;
+      termBody.appendChild(line);
+      termBody.scrollTop = termBody.scrollHeight;
+      return line;
+    }
+
+    function printBox(htmlContent, extraClass = "") {
+      const box = document.createElement('div');
+      box.className = `ascii-box ${extraClass}`;
+      box.innerHTML = htmlContent;
+      termBody.appendChild(box);
+      termBody.scrollTop = termBody.scrollHeight;
+      return box;
+    }
+
+    function clearTerminal() {
+      termBody.innerHTML = "";
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // --- TYPEWRITER INTRO EFFECT ---
+    let typewriterCancel = null;
+
+    function runTypewriter(textArray, onComplete) {
+      let lineIndex = 0;
+      let charIndex = 0;
+      let currentElem = null;
+      let isCancelled = false;
+
+      typewriterCancel = () => {
+        isCancelled = true;
+      };
+
+      function nextChar() {
+        if (isCancelled) {
+          while (lineIndex < textArray.length) {
+            const item = textArray[lineIndex];
+            printLine(item.text, item.cls || "");
+            lineIndex++;
+          }
+          if (onComplete) onComplete();
+          return;
+        }
+
+        if (lineIndex >= textArray.length) {
+          if (onComplete) onComplete();
+          return;
+        }
+
+        const item = textArray[lineIndex];
+
+        if (!currentElem) {
+          currentElem = document.createElement('div');
+          currentElem.className = `term-line ${item.cls || ""}`;
+          termBody.appendChild(currentElem);
+        }
+
+        if (charIndex < item.text.length) {
+          currentElem.textContent += item.text[charIndex];
+          charIndex++;
+          termBody.scrollTop = termBody.scrollHeight;
+          if (Math.random() > 0.45) playKeyBlip();
+          setTimeout(nextChar, 16);
+        } else {
+          lineIndex++;
+          charIndex = 0;
+          currentElem = null;
+          setTimeout(nextChar, 70);
+        }
+      }
+
+      nextChar();
+    }
+
+    // --- TIMER SYSTEM & WARNING SOUNDS ---
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `[${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}]`;
+    }
+
+    function startTimer() {
+      stopTimer();
+      timeRemaining = totalTime;
+      updateTimerBadge();
+      // Alerts at 60% / 40% / 20% of total time (75s -> 45/30/15, 60s -> 36/24/12, 90s -> 54/36/18)
+      const warn1 = Math.round(totalTime * 0.6);
+      const warn2 = Math.round(totalTime * 0.4);
+      const warn3 = Math.round(totalTime * 0.2);
+
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerBadge();
+
+        if (timeRemaining === warn1) {
+          playTimerWarning();
+          printLine(`[!] ZAMAN UYARISI: Kalan süre ${warn1} saniye! Hızlanın!`, "c-amber bold glow-amber");
+        }
+        if (timeRemaining === warn2) {
+          playTimerWarning();
+          triggerScreenShake();
+          printLine(`[!] KRİTİK ZAMAN UYARISI: Son ${warn2} saniye! Sistem kilitleniyor!`, "c-pink bold glow-pink");
+        }
+        if (timeRemaining === warn3) {
+          playTimerWarning();
+          triggerScreenShake();
+          printLine(`[!] KIRMIZI ALARM: Son ${warn3} saniye! ACİL DURUM!`, "c-blood bold glow-blood");
+        }
+
+        // Final 20% panic heartbeat / tick pulse
+        if (timeRemaining <= warn3 && timeRemaining > 0) {
+          playTickPulse();
+          timerDisplay.classList.add('urgent');
+        } else {
+          timerDisplay.classList.remove('urgent');
+        }
+
+        if (timeRemaining <= 0) {
+          stopTimer();
+          handleTimeout();
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function updateTimerBadge() {
+      timerDisplay.textContent = formatTime(Math.max(0, timeRemaining));
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    // Pick 3 distinct categories + 1 question each, never repeating the previous run's set/questions
+    function buildRun(diff) {
+      let cats;
+      do {
+        cats = shuffle(CATEGORIES).slice(0, 3);
+      } while (cats.map(c => c.id).sort().join() === lastRun.catKey);
+
+      const keys = shuffle(KEY_WORDS).slice(0, 3);
+      activeStages = cats.map((cat, i) => {
+        const pool = cat.Q[diff];
+        const fresh = pool.filter(item => !lastRun.ids.includes(item.id));
+        const list = fresh.length ? fresh : pool;
+        return { cat, q: list[Math.floor(Math.random() * list.length)], key: keys[i] };
+      });
+      lastRun = { catKey: cats.map(c => c.id).sort().join(), ids: activeStages.map(s => s.q.id) };
+    }
+
+    // --- GAME INITIALIZATION & BOOT SEQUENCE ---
+    function initBootSequence() {
+      currentState = GAME_STATE.INIT_TYPING;
+      clearTerminal();
+      stopTimer();
+      timerDisplay.textContent = "[--:--]";
+      timerDisplay.classList.remove('urgent');
+      promptTag.className = "prompt-label";
+      promptTag.textContent = "AUTH:IDENT >";
+      termInput.placeholder = "Operatör kod adını yazıp Enter'a bas...";
+      termInput.value = "";
+      collectedFragments = [];
+      activeStages = [];
+      stageIndex = 0;
+
+      const bootLines = [
+        { text: "[!] ROOTFALL MAINFRAME LOCKOUT DETECTED.", cls: "c-blood bold glow-blood" },
+        { text: "[!] LEVEL 0 CLEARANCE RESTRICTION ACTIVE.", cls: "c-amber bold glow-amber" },
+        { text: "3 güvenlik katmanını kır, Master Key'i gir, sistemi ele geçir.", cls: "c-cyan bold" },
+        { text: "------------------------------------------------------------", cls: "c-dim" },
+        { text: "OPERATÖR KOD ADINI GİR:", cls: "c-white bold glow-cyan" }
+      ];
+
+      runTypewriter(bootLines, () => {
+        currentState = GAME_STATE.AWAIT_NAME;
+        termInput.focus();
+      });
+    }
+
+    function askDifficulty() {
+      currentState = GAME_STATE.AWAIT_DIFFICULTY;
+      promptTag.textContent = "ZORLUK >";
+      termInput.placeholder = "1, 2 veya 3 yazıp Enter'a bas...";
+      printLine("");
+      printLine("[?] ZORLUK SEVİYESİNİ SEÇ:", "c-white bold glow-cyan");
+      Object.entries(DIFFICULTY_CONFIG).forEach(([name, cfg], i) => {
+        printLine(`  <span class="c-cyan bold">${i + 1}</span> - <span class="${cfg.color} bold">${name.padEnd(5, ' ')}</span> <span class="c-dim">(${cfg.time} saniye)</span>`);
+      });
+      printLine("Her seviyenin kendi liderlik tablosu vardır.", "c-dim");
+    }
+
+    function startRun(diff) {
+      selectedDifficulty = diff;
+      totalTime = DIFFICULTY_CONFIG[diff].time;
+      skipCount = 0;
+      buildRun(diff);
+      printLine(`[+] ZORLUK: <span class="${DIFFICULTY_CONFIG[diff].color} bold">${diff}</span>`, "c-blue");
+      printLine(`[+] ${totalTime} SANİYELİK GERİ SAYIM BAŞLATILDI!`, "c-cyan bold glow-cyan");
+      printLine(`[+] KÖK ERİŞİM PROTOKOLÜNE GEÇİLİYOR...`, "c-dim");
+      startTimer();
+      setTimeout(() => launchStage(0), 500);
+    }
+
+    // --- STAGE RENDERER (one renderer for every category) ---
+    function launchStage(i) {
+      if (stageIndex !== i || currentState !== GAME_STATE.STAGE) hintUsed = false; // 'clear' re-renders the same stage
+      stageIndex = i;
+      currentState = GAME_STATE.STAGE;
+      const { cat, q } = activeStages[i];
+      promptTag.className = "prompt-label";
+      promptTag.textContent = `STAGE ${i + 1} >`;
+      termInput.placeholder = cat.placeholder;
+      termInput.value = "";
+
+      printLine("");
+      printLine("============================================================", "c-cyan");
+      printLine(`[*] AŞAMA ${i + 1}/3: ${cat.icon} ${cat.title}`, "c-cyan bold glow-cyan");
+      printLine("============================================================", "c-cyan");
+      (q.guide || []).forEach((line, n) => printLine(escapeHtml(line), n === 0 ? "c-amber bold" : "c-blue"));
+      if (q.code) {
+        printLine(`${q.lang} kod parçası:`, "c-white");
+        printLine(`------------------------------------------------------------`, "c-dim");
+        q.code.forEach(line => printLine(`  <span class="c-white bold">${escapeHtml(line)}</span>`));
+        printLine(`------------------------------------------------------------`, "c-dim");
+      }
+      printLine(`Görev: <span class="c-pink bold" style="font-size: 15px;">${escapeHtml(q.text)}</span>`);
+      printLine(`(İpucu için 'hint' — ipucundan sonra 'skip' ile -${DIFFICULTY_CONFIG[selectedDifficulty].skipCost} sn karşılığında atlayabilirsin)`, "c-dim");
+    }
+
+    // Normalize for comparison: uppercase, no spaces/quotes
+    const normalizeAnswer = (s) => s.toUpperCase().replace(/[\s'"`]/g, "");
+
+    function checkStage(input) {
+      const stage = activeStages[stageIndex];
+      if (stage.q.a.map(normalizeAnswer).includes(normalizeAnswer(input))) {
+        playStageClear();
+        printLine(`[+] DOĞRU! ${stage.cat.title} katmanı aşıldı.`, "c-green bold glow-green");
+        grantKeyAndAdvance();
+      } else {
+        playErrorBuzz();
+        printLine(`[-] HATALI: "${escapeHtml(input)}". Tekrar dene veya 'hint' yaz.`, "c-blood");
+      }
+    }
+
+    function grantKeyAndAdvance() {
+      const key = activeStages[stageIndex].key;
+      collectedFragments.push(key);
+      printLine(`[+] ${stageIndex + 1}. ANAHTAR ALINDI: <span class="c-amber bold glow-amber">[${key}]</span>`, "c-white");
+      if (stageIndex < 2) {
+        setTimeout(() => launchStage(stageIndex + 1), 600);
+      } else {
+        printLine(`[!] TÜM GÖREVLER BİTTİ! Sistemi açmak için Master Key girmen gerekiyor (Aralarına mutlaka '-' tire koyunuz: 1.ANAHTAR-2.ANAHTAR-3.ANAHTAR).`, "c-cyan bold glow-cyan");
+        setTimeout(launchMasterKeyFinale, 600);
+      }
+    }
+
+    // MASTER KEY GEÇİŞ MİMARİSİ (ZORUNLU KİLİT)
+    function launchMasterKeyFinale() {
+      currentState = GAME_STATE.MASTER_KEY;
+      promptTag.className = "prompt-label blood";
+      promptTag.textContent = "MASTER KEY >";
+      const [k1, k2, k3] = collectedFragments;
+
+      termInput.placeholder = "Format: 1.ANAHTAR-2.ANAHTAR-3.ANAHTAR (Aralarına '-' koyup Enter'a bas)";
+      termInput.value = "";
+
+      printLine("");
+      printLine("============================================================", "c-blood bold glow-blood");
+      printLine("[!] TÜM GÜVENLİK DUVARLARI AŞILDI // SON KİLİT DEVREDE", "c-blood bold glow-blood");
+      printLine("[!] KÖK (ROOT) ERİŞİMİ İÇİN MASTER KEY GİRİNİZ! (Aralarına '-' tire koyunuz)", "c-blood bold glow-blood");
+      printLine("============================================================", "c-blood bold");
+      printLine("💡 DİKKAT: KİLİT NASIL AÇILIR?", "c-amber bold glow-amber");
+      printLine("- 3 aşamayı da tamamladın! Kazandığın anahtarları birleştirip gir.", "c-white");
+      printLine("- ⚠️ ÖNEMLİ KURAL: Anahtarların arasına mutlaka TİRE (-) koymalısın!", "c-pink bold");
+      printLine("🔑 TOPLANAN ANAHTARLAR:", "c-white bold");
+      printLine(`  1: <span class="c-amber bold glow-amber">[${k1}]</span>`);
+      printLine(`  2: <span class="c-amber bold glow-amber">[${k2}]</span>`);
+      printLine(`  3: <span class="c-amber bold glow-amber">[${k3}]</span>`);
+      printLine(`👉 GİRİŞ FORMATI: <span class="c-green bold glow-green">1.ANAHTAR-2.ANAHTAR-3.ANAHTAR</span> <span class="c-dim">(Örn: ABC-DEF-GHI)</span>`);
+      printLine(`- Anahtarları tekrar görmek için <span class="c-cyan bold">'status'</span> yazabilirsin.`, "c-dim");
+      printLine(`- DİKKAT: Hatalı giriş -5 SANİYE ZAMAN CEZASI VERİR!`, "c-blood bold glow-blood");
+      printLine("------------------------------------------------------------", "c-dim");
+    }
+
+    // --- VICTORY & FAILURE SCREENS ---
+    function triggerVictory() {
+      stopTimer();
+      currentState = GAME_STATE.VICTORY;
+      playVictoryFanfare();
+      document.body.classList.add('screen-flash-green');
+      setTimeout(() => document.body.classList.remove('screen-flash-green'), 650);
+
+      const randomHex = Math.random().toString(16).substring(2, 6).toUpperCase();
+      const masterKeyCombined = `${collectedFragments.join('-')}-${randomHex}`;
+      const timeTakenSec = totalTime - timeRemaining;
+
+      // Save to localStorage Leaderboard
+      saveScore(operatorName, timeTakenSec, masterKeyCombined, selectedDifficulty);
+
+      printLine("");
+      const voucherHtml = `
+<div class="voucher-card">
+  <div class="c-cyan bold" style="font-size: 15px; margin-bottom: 8px;">
+    ============================================================<br>
+    [+] ROOT ACCESS GRANTED // LEVEL 4 CLEARANCE<br>
+    ============================================================
+  </div>
+  <div style="line-height: 1.85; font-size: 14px;">
+    <div><span class="c-dim">YETKİLİ OPERATÖR    :</span> <span class="c-white bold glow-cyan">${escapeHtml(operatorName)}</span></div>
+    <div><span class="c-dim">GÜVENLİK MASTER KEY :</span> <span class="c-blood bold glow-blood" style="letter-spacing: 1px;">${masterKeyCombined}</span></div>
+    <div><span class="c-dim">ZORLUK              :</span> <span class="${DIFFICULTY_CONFIG[selectedDifficulty].color} bold">${selectedDifficulty}</span></div>
+    <div><span class="c-dim">ATLANAN SORU        :</span> <span class="${skipCount ? 'c-pink' : 'c-green'} bold">${skipCount} / 3</span></div>
+    <div><span class="c-dim">TAMAMLANMA SÜRESİ   :</span> <span class="c-amber bold glow-amber">${timeTakenSec} Saniye</span></div>
+    <div><span class="c-dim">DURUM               :</span> <span class="c-green bold glow-green">TAM ERİŞİM ONAYLANDI (SYSTEM BREACHED)</span></div>
+  </div>
+  <div class="c-cyan" style="margin: 8px 0;">------------------------------------------------------------</div>
+  <div style="color: #f8fafc; font-size: 13.5px; line-height: 1.65;">
+    🎉 <span class="bold c-amber glow-amber">TEBRİKLER! GÜVENLİK SİSTEMİNİ ÇÖKERTTİN.</span><br><br>
+    🏆 <span class="c-white bold">Derecen yerel liderlik tablosuna kaydedildi.</span><br>
+    📸 Ekran görüntüsünü al, süreni paylaş ve arkadaşlarını<br>
+    <span class="c-green bold glow-green" style="text-decoration: underline;">${totalTime} SANİYE</span> içinde rekorunu kırmaya davet et!
+  </div>
+  <div class="c-cyan" style="margin-top: 8px;">============================================================</div>
+</div>
+`;
+      const vElem = document.createElement('div');
+      vElem.innerHTML = voucherHtml;
+      termBody.appendChild(vElem);
+
+      // Print Live Top 5 Leaderboard right below the voucher
+      const lbElem = printLeaderboard([selectedDifficulty]);
+
+      const btnContainer = document.createElement('div');
+      btnContainer.className = 'action-btn-container';
+      btnContainer.innerHTML = `
+        <button id="btn-next-player" class="action-btn">
+          🔄 [YENİ OPERATÖR // TEKRAR OYNA]
+        </button>
+        <button id="btn-clear-lb" class="action-btn" style="border-color: var(--amber-gold); color: var(--amber-gold); background: rgba(245, 158, 11, 0.12);">
+          🗑️ [TABLOYU SIFIRLA]
+        </button>
+      `;
+      termBody.appendChild(btnContainer);
+      termBody.scrollTop = termBody.scrollHeight;
+
+      document.getElementById('btn-next-player').onclick = () => {
+        initBootSequence();
+      };
+
+      document.getElementById('btn-clear-lb').onclick = () => {
+        if (confirm("Liderlik tablosundaki tüm skorlar kalıcı olarak silinecektir. Emin misiniz?")) {
+          resetLeaderboard();
+          lbElem.innerHTML = formatLeaderboardView(5, selectedDifficulty);
+          printLine("[!] LİDERLİK TABLOSU BAŞARIYLA SIFIRLANDI.", "c-green bold glow-green");
+        }
+      };
+
+      promptTag.className = "prompt-label";
+      promptTag.textContent = "SUCCESS >";
+      termInput.placeholder = "Yeni operatör için 'reset' yazın veya yukarıdaki butona tıklayın...";
+      termInput.value = "";
+    }
+
+    function handleTimeout() {
+      currentState = GAME_STATE.FAILED;
+      playErrorBuzz();
+      document.body.classList.add('screen-flash-blood');
+      setTimeout(() => document.body.classList.remove('screen-flash-blood'), 650);
+
+      printLine("");
+      printLine("============================================================", "c-blood bold glow-blood");
+      printLine("[!] SÜRE DOLDU. SİSTEM KİLİTLENDİ. // BAĞLANTI KESİLDİ!", "c-blood bold glow-blood");
+      printLine("============================================================", "c-blood bold");
+      printLine("[☠] KRİTİK SİSTEM İHLALİ: Savunma algoritmaları sızıntıyı tespit etti!", "c-blood bold glow-blood");
+      printLine("[!] TRACE ROUTE AKTİF: IP adresin ve donanım imzan loglandı.", "c-pink bold");
+      printLine("[-] Çekirdek bellek mühürlendi, tüm geçici oturum anahtarları imha edildi.", "c-dim");
+      printLine("[-] Savunma duvarı terminal erişimini sonlandırdı: KÖK KORUMASI AŞILAMADI.", "c-dim");
+      printLine("");
+      printLine("<span class=\"c-amber bold glow-amber\">Dijital izin ağdan silindi...</span> <span class=\"c-white\">Sistem seni dışarı fırlattı.</span>");
+      printLine("<span class=\"c-cyan bold\">Tekrar sızacak cesaretin ve bilgin varsa sistemi yeniden başlat!</span>");
+      printLine("------------------------------------------------------------", "c-dim");
+
+      const btnContainer = document.createElement('div');
+      btnContainer.className = 'action-btn-container';
+      btnContainer.innerHTML = `
+        <button id="btn-retry" class="action-btn blood">
+          ⚡ [YENİDEN DENE // SİSTEME TEKRAR SIZ]
+        </button>
+      `;
+      termBody.appendChild(btnContainer);
+      termBody.scrollTop = termBody.scrollHeight;
+
+      document.getElementById('btn-retry').onclick = () => {
+        initBootSequence();
+      };
+
+      promptTag.className = "prompt-label blood";
+      promptTag.textContent = "LOCKOUT >";
+      termInput.placeholder = "Sisteme tekrar sızmak için 'retry' yazınız veya butona tıklayınız...";
+      termInput.value = "";
+    }
+
+    // --- COMMAND DISPATCHER ---
+    function handleCommand(rawInput) {
+      const input = rawInput.trim();
+      if (!input) return;
+
+      commandHistory.push(input);
+      historyIndex = commandHistory.length;
+
+      playKeyBlip();
+
+      printLine(`<span class="c-cyan bold">${promptTag.textContent}</span> <span class="c-white">${escapeHtml(input)}</span>`);
+
+      // 1. Initial State: Typewriter skip on typing
+      if (currentState === GAME_STATE.INIT_TYPING) {
+        if (typewriterCancel) typewriterCancel();
+        return;
+      }
+
+      // 2. Global Universal Commands
+      const lower = input.toLowerCase();
+
+      if (lower === "clear" || lower === "cls") {
+        clearTerminal();
+        printLine(`[ROOTFALL v7.0 // EKRAN TEMİZLENDİ]`, "c-dim");
+        if (currentState === GAME_STATE.STAGE) {
+          launchStage(stageIndex);
+        } else if (currentState === GAME_STATE.MASTER_KEY) {
+          printLine(`Kök Yetkilendirme aktif! Master key formatı: [1.ANAHTAR]-[2.ANAHTAR]-[3.ANAHTAR]`, "c-blood bold");
+        }
+        return;
+      }
+
+      if (lower === "help") {
+        printLine("[?] KULLANILABİLİR KOMUTLAR:", "c-amber bold glow-amber");
+        printLine("  hint        - Mevcut aşama için arkadaş canlısı bir ipucu verir", "c-blue");
+        printLine("  skip        - (hint'ten sonra) soruyu atlar: KOLAY -10 / ORTA -15 / ZOR -20 sn", "c-blue");
+        printLine("  status      - Operatör, süre ve toplanan anahtar durumunu gösterir", "c-blue");
+        printLine("  leaderboard - Her zorluk için en hızlı 5 rekoru listeler (veya 'top', 'skor')", "c-blue");
+        printLine("  clear       - Terminal ekranını temizler", "c-blue");
+        printLine("  reset       - Oyunu sıfırlar ve yeni operatör için başlatır", "c-blue");
+        return;
+      }
+
+      if (lower === "leaderboard" || lower === "top" || lower === "skor") {
+        printLeaderboard(Object.keys(DIFFICULTY_CONFIG));
+        return;
+      }
+
+      if (lower === "reset-board") {
+        if (confirm("Liderlik tablosundaki tüm skorlar kalıcı olarak silinecektir. Emin misiniz?")) {
+          resetLeaderboard();
+          printLine("[!] LİDERLİK TABLOSU BAŞARIYLA SIFIRLANDI.", "c-green bold glow-green");
+        } else {
+          printLine("[*] Liderlik tablosu sıfırlama işlemi iptal edildi.", "c-dim");
+        }
+        return;
+      }
+
+      if (lower === "status") {
+        printLine("[i] GÜNCEL SİSTEM DURUMU:", "c-cyan bold glow-cyan");
+        printLine(`  OPERATÖR       : ${operatorName || "GİRİLMEDİ"}`);
+        printLine(`  KALAN SÜRE     : ${formatTime(timeRemaining)}`);
+        printLine(`  AKTİF AŞAMA    : ${currentState === GAME_STATE.STAGE ? `${stageIndex + 1}/3` : currentState}`);
+        printLine(`  ZORLUK         : ${selectedDifficulty}`, "c-blue");
+        const k1 = collectedFragments[0] ? collectedFragments[0] : "BEKLEMEDE";
+        const k2 = collectedFragments[1] ? collectedFragments[1] : "BEKLEMEDE";
+        const k3 = collectedFragments[2] ? collectedFragments[2] : "BEKLEMEDE";
+        printLine(`  TOPLANAN ANAHTARLAR: 1: [${k1}] | 2: [${k2}] | 3: [${k3}]`, "c-amber bold");
+        return;
+      }
+
+      if (lower === "reset" || lower === "restart" || lower === "retry") {
+        initBootSequence();
+        return;
+      }
+
+      if (lower === "skip" && currentState !== GAME_STATE.AWAIT_NAME) {
+        skipStage();
+        return;
+      }
+
+      // 3. State-Specific Input Handling
+      if (currentState === GAME_STATE.AWAIT_NAME) {
+        if (input.length < 2) {
+          playErrorBuzz();
+          printLine("[!] Geçerli bir kod adı gir (en az 2 karakter).", "c-blood");
+          return;
+        }
+        operatorName = input.trim();
+        printLine(`[+] KİMLİK DOĞRULANDI: <span class="c-white bold">${escapeHtml(operatorName.toUpperCase())}</span>`, "c-green bold glow-green");
+        askDifficulty();
+        return;
+      }
+
+      if (currentState === GAME_STATE.AWAIT_DIFFICULTY) {
+        const diff = DIFF_ALIASES[input.toUpperCase()];
+        if (!diff) {
+          playErrorBuzz();
+          printLine("[!] Geçersiz seçim. 1 (KOLAY), 2 (ORTA) veya 3 (ZOR) yaz.", "c-blood");
+          return;
+        }
+        startRun(diff);
+        return;
+      }
+
+      if (lower === "hint") {
+        giveHint();
+        return;
+      }
+
+      if (currentState === GAME_STATE.STAGE) {
+        checkStage(input);
+        return;
+      }
+
+      if (currentState === GAME_STATE.MASTER_KEY) {
+        checkMasterKey(input);
+        return;
+      }
+
+      if (currentState === GAME_STATE.VICTORY) {
+        printLine("[i] Sistem kırıldı! Yeniden başlatmak için butona tıklayın veya 'reset' yazın.", "c-green");
+        return;
+      }
+
+      if (currentState === GAME_STATE.FAILED) {
+        printLine("[!] Süre doldu. Tekrar denemek için butona tıklayın veya 'retry' yazın.", "c-blood");
+        return;
+      }
+    }
+
+    // --- CHECKERS & VALIDATORS ---
+    function checkMasterKey(input) {
+      const k1 = (collectedFragments[0] || "").replace(/-/g, '').trim().toUpperCase();
+      const k2 = (collectedFragments[1] || "").replace(/-/g, '').trim().toUpperCase();
+      const k3 = (collectedFragments[2] || "").replace(/-/g, '').trim().toUpperCase();
+      const expectedMasterKey = `${k1}-${k2}-${k3}`;
+
+      // Normalize user input: remove spaces, remove surrounding brackets if typed
+      const cleanInput = input.trim().toUpperCase().replace(/[\[\]\s]/g, "");
+
+      if (cleanInput === expectedMasterKey) {
+        printLine(`[+] KİMLİK KONTROLÜ BAŞARILI: MASTER KEY KABUL EDİLDİ!`, "c-green bold glow-green");
+        triggerVictory();
+      } else {
+        // Special helpful warning if user entered keys but forgot the '-' hyphen
+        const noSepInput = input.trim().toUpperCase().replace(/[\s\-_,.:;[\]]/g, "");
+        const expectedNoSep = `${k1}${k2}${k3}`;
+        if (noSepInput === expectedNoSep && !input.includes('-')) {
+          printLine(`[!] FORMAT HATASI: Anahtarların arasına TİRE (-) koymayı unuttunuz!`, "c-amber bold glow-amber");
+          printLine(`[!] Doğru format: <span class="c-white bold">1.ANAHTAR-2.ANAHTAR-3.ANAHTAR</span> (Örn: ABC-DEF-GHI)`, "c-cyan bold");
+        }
+
+        // Mismatch: harsh siren, error buzz, screen shake, and 5-SECOND TIME PENALTY
+        playPenaltySiren();
+        playErrorBuzz();
+
+        timeRemaining = Math.max(0, timeRemaining - 5);
+        updateTimerBadge();
+
+        printLine(`[-] YETKİ REDDEDİLDİ: HATALI MASTER KEY! (-5 SANİYE CEZA)`, "c-blood bold glow-blood");
+        printLine(`Format: 1.ANAHTAR-2.ANAHTAR-3.ANAHTAR (Anahtarları listelemek için <span class="c-cyan bold">status</span> yazabilirsiniz)`, "c-dim");
+
+        if (timeRemaining <= 0) {
+          stopTimer();
+          handleTimeout();
+        }
+      }
+    }
+
+    // Player skip: unlocked by 'hint' on the current stage, costs time by difficulty, still grants the key
+    function skipStage() {
+      if (currentState !== GAME_STATE.STAGE) {
+        printLine(`[!] 'skip' yalnızca soru aşamalarında kullanılabilir.`, "c-dim");
+        return;
+      }
+      if (!hintUsed) {
+        playErrorBuzz();
+        printLine(`[!] ATLAMA KİLİTLİ: Önce <span class="c-cyan bold">hint</span> yazıp ipucunu almalısın.`, "c-amber bold");
+        return;
+      }
+      const cost = DIFFICULTY_CONFIG[selectedDifficulty].skipCost;
+      timeRemaining = Math.max(0, timeRemaining - cost);
+      updateTimerBadge();
+      skipCount++;
+      playPenaltySiren();
+      printLine(`[⏭] SORU ATLANDI: -${cost} SANİYE BYPASS BEDELİ ÖDENDİ.`, "c-pink bold glow-pink");
+      if (timeRemaining <= 0) {
+        stopTimer();
+        handleTimeout();
+        return;
+      }
+      grantKeyAndAdvance();
+    }
+
+    function giveHint() {
+      if (currentState === GAME_STATE.STAGE) {
+        printLine(`💡 İPUCU: ${escapeHtml(activeStages[stageIndex].q.hint)}`, "c-amber");
+        if (!hintUsed) {
+          hintUsed = true;
+          const cost = DIFFICULTY_CONFIG[selectedDifficulty].skipCost;
+          const i = stageIndex;
+          const row = document.createElement('div');
+          row.className = 'action-btn-container';
+          row.innerHTML = `<span class="c-dim">Hâlâ takıldıysan: <span class="c-pink bold">skip</span> yaz veya</span>
+            <button class="action-btn blood">⏭ [SORUYU ATLA // -${cost} SN]</button>`;
+          row.querySelector('button').onclick = () => {
+            if (currentState === GAME_STATE.STAGE && stageIndex === i) handleCommand('skip');
+          };
+          termBody.appendChild(row);
+          termBody.scrollTop = termBody.scrollHeight;
+        }
+      } else if (currentState === GAME_STATE.MASTER_KEY) {
+        printLine(`💡 İPUCU: Kazandığın 3 anahtarı aralarına tire koyarak yazmalısın: 1.ANAHTAR-2.ANAHTAR-3.ANAHTAR. Anahtarları görmek için 'status' komutunu kullanabilirsin!`, "c-amber");
+      } else {
+        printLine(`💡 Henüz aktif bir bulmaca aşamasında değilsiniz.`, "c-dim");
+      }
+    }
+
+    // --- EVENT LISTENERS ---
+    termInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const val = termInput.value;
+        termInput.value = "";
+        handleCommand(val);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (commandHistory.length > 0) {
+          if (historyIndex > 0) historyIndex--;
+          termInput.value = commandHistory[historyIndex] || "";
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex < commandHistory.length - 1) {
+          historyIndex++;
+          termInput.value = commandHistory[historyIndex] || "";
+        } else {
+          historyIndex = commandHistory.length;
+          termInput.value = "";
+        }
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+        termInput.focus();
+      }
+      getAudioContext();
+    });
+
+    document.addEventListener('touchstart', () => {
+      getAudioContext();
+    }, { passive: true });
+
+    // Sound Toggle Button
+    soundBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      soundEnabled = !soundEnabled;
+      if (soundEnabled) {
+        getAudioContext();
+        soundIcon.textContent = "🔊";
+        soundLabel.textContent = "SES: AÇIK";
+        playStageClear();
+      } else {
+        soundIcon.textContent = "🔇";
+        soundLabel.textContent = "SES: KAPALI";
+      }
+    });
+
+    // Reset Leaderboard Header Button (with confirmation)
+    const resetLbBtn = document.getElementById('reset-lb-btn');
+    if (resetLbBtn) {
+      resetLbBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm("Liderlik tablosundaki tüm skorlar kalıcı olarak silinecektir. Emin misiniz?")) {
+          resetLeaderboard();
+          printLine("[!] LİDERLİK TABLOSU BAŞARIYLA SIFIRLANDI.", "c-green bold glow-green");
+        }
+      });
+    }
+
+    // Start boot sequence immediately on load
+    window.addEventListener('DOMContentLoaded', () => {
+      initBootSequence();
+    });
+  </script>
+</body>
+</html>

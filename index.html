@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>ROOTFALL</title>
+  </head>
+  <body>
+    <div id="app">
+      <header id="top">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">⚡</span>
+          <span class="brand-name">ROOTFALL</span>
+          <span class="brand-ver" id="version"></span>
+          <span class="brand-tag">BREACH UNIT</span>
+        </div>
+        <div class="controls">
+          <button id="sound-btn" class="ctrl" type="button" title="Ses Aç/Kapat"></button>
+          <button id="fx-btn" class="ctrl" type="button" title="Görsel efektleri azalt / artır"></button>
+          <button id="reset-lb-btn" class="ctrl ctrl-warn" type="button" title="Liderlik Tablosunu Sıfırla">🗑️ TABLOYU SIFIRLA</button>
+          <div id="timer" class="timer" aria-label="Kalan süre">[--:--]</div>
+        </div>
+      </header>
+
+      <main id="log" role="log" aria-live="polite"></main>
+
+      <footer id="input-row">
+        <label id="prompt" for="input">AUTH:IDENT &gt;</label>
+        <input id="input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      </footer>
+
+      <div id="confirm" class="modal" hidden>
+        <div class="modal-box" role="alertdialog" aria-modal="true" aria-labelledby="confirm-text">
+          <div class="modal-title">[!] ONAY GEREKLİ</div>
+          <p id="confirm-text"></p>
+          <div class="modal-actions">
+            <button id="confirm-no" class="btn tone-accent" type="button">[VAZGEÇ]</button>
+            <button id="confirm-yes" class="btn tone-danger" type="button">[EVET, SİL]</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
