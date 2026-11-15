@@ -220,7 +220,8 @@ describe('hint and skip', () => {
     h.game.handleInput('skip');
     h.solveAll();
     h.game.handleInput(h.game.keys.join('-'));
-    expect(h.text()).toContain('ATLANAN SORU: 1 / 3');
+    expect(h.text()).toContain('ATLANAN SORU: 1 / 1');
+    expect(h.text()).toContain('atlamasız koşuların altında sıralandın');
   });
 });
 
@@ -331,6 +332,161 @@ describe('victory and leaderboard', () => {
     const h = harness();
     h.store.setItem('rootfall_lb', '{not json');
     expect(getLeaderboard(h.store)).toEqual([]);
+  });
+});
+
+describe('clock stops while the game writes new text', () => {
+  it('the countdown starts only when the first question is fully written', () => {
+    const h = harness(5, { manualScenes: true });
+    h.begin('1');
+    expect(h.game.clockHeld).toBe(true);
+    h.clock.ms += 5_000; // the question is still being written
+    h.game.tick();
+    expect(h.game.remainingSeconds()).toBe(60);
+    h.game.sceneDone();
+    expect(h.game.clockHeld).toBe(false);
+    h.clock.ms += 2_000;
+    expect(h.game.remainingSeconds()).toBe(58);
+  });
+
+  it('no answer counts while a scene is being written; Enter only finishes it', () => {
+    const h = harness(5, { manualScenes: true });
+    h.begin('1');
+    const answer = h.game.stages[0].q.answers[0];
+    h.game.handleInput(answer);
+    expect(h.out.some((o) => o.type === 'reveal-skip')).toBe(true);
+    expect(h.game.keys).toHaveLength(0);
+    h.game.sceneDone();
+    h.game.handleInput(answer);
+    expect(h.game.keys).toHaveLength(1);
+  });
+
+  it('holds the clock for a solved question and the next one, and the score ignores that time', () => {
+    const h = harness(5, { manualScenes: true });
+    h.begin('1', 'Neo');
+    h.game.sceneDone();
+    for (let i = 0; i < 3; i++) {
+      h.clock.ms += 4_000; // thinking: counts
+      h.game.handleInput(h.game.stages[i].q.answers[0]);
+      expect(h.game.clockHeld).toBe(true);
+      h.clock.ms += 3_000; // writing animation: does not count
+      h.game.sceneDone();
+    }
+    expect(h.game.state).toBe('MASTER_KEY');
+    expect(h.game.remainingSeconds()).toBe(48);
+    h.game.handleInput(h.game.keys.join('-'));
+    expect(getLeaderboard(h.store, 'KOLAY')[0].timeUsed).toBe(12);
+  });
+
+  it('commands, hints and wrong answers never stop the clock', () => {
+    const h = harness(5, { manualScenes: true });
+    h.begin('2');
+    h.game.sceneDone();
+    const scenes = () => h.out.filter((o) => o.type === 'scene-start').length;
+    const before = scenes();
+    for (const cmd of ['help', 'status', 'clear', 'hint', 'leaderboard', 'wrong-answer']) {
+      h.game.handleInput(cmd);
+      expect(h.game.clockHeld, cmd).toBe(false);
+    }
+    expect(scenes()).toBe(before);
+    h.clock.ms += 1_000;
+    expect(h.game.remainingSeconds()).toBe(75 - 3 - 1);
+  });
+
+  it('a penalty during a held clock still applies, and timeout still ends the run', () => {
+    const h = harness(5, { manualScenes: true });
+    h.begin('1');
+    h.game.sceneDone();
+    h.clock.ms += 55_000;
+    h.game.handleInput('hint');
+    h.game.handleInput('skip'); // -10 with 5 s left
+    expect(h.game.state).toBe('FAILED');
+    expect(h.game.clockHeld).toBe(false);
+  });
+});
+
+describe('skip limit and ranking', () => {
+  it('allows one skip per run and hides the skip offer afterwards', () => {
+    const h = harness(9);
+    h.begin('3');
+    expect(h.game.skipsLeft).toBe(1);
+    h.game.handleInput('hint');
+    h.game.handleInput('skip');
+    expect(h.game.keys).toHaveLength(1);
+    expect(h.game.skipsLeft).toBe(0);
+    const offers = () => h.out.filter((o) => o.type === 'buttons' && o.buttons.some((b) => b.action.type === 'skip')).length;
+    expect(offers()).toBe(1);
+    h.game.handleInput('hint');
+    expect(offers()).toBe(1);
+    expect(h.text()).toContain('Atlama hakkını bu koşuda kullandın');
+    const left = h.game.remainingSeconds();
+    h.game.handleInput('skip');
+    expect(h.game.keys).toHaveLength(1);
+    expect(h.game.remainingSeconds()).toBe(left);
+    expect(h.text()).toContain('ATLAMA HAKKI BİTTİ');
+  });
+
+  it('a new run gets its skip back', () => {
+    const h = harness(9);
+    h.begin('1');
+    h.game.handleInput('hint');
+    h.game.handleInput('skip');
+    h.begin('1');
+    expect(h.game.skipsLeft).toBe(1);
+  });
+
+  it('ranks runs without skips above faster runs with a skip', () => {
+    const h = harness();
+    h.store.setItem('rootfall_lb', JSON.stringify([
+      { name: 'skipper', timeUsed: 20, key: 'X', diff: 'KOLAY', skips: 1 },
+      { name: 'clean-slow', timeUsed: 50, key: 'X', diff: 'KOLAY', skips: 0 },
+      { name: 'old-entry', timeUsed: 30, key: 'X', diff: 'KOLAY' },
+    ]));
+    expect(getLeaderboard(h.store, 'KOLAY').map((e) => e.name)).toEqual(['old-entry', 'clean-slow', 'skipper']);
+    h.begin('1', 'Neo');
+    h.clock.ms += 5_000;
+    h.game.handleInput('hint');
+    h.game.handleInput('skip');
+    h.solveAll();
+    h.game.handleInput(h.game.keys.join('-'));
+    const board = getLeaderboard(h.store, 'KOLAY');
+    expect(board.map((e) => e.name)).toEqual(['old-entry', 'clean-slow', 'Neo', 'skipper']);
+    expect(board[2].skips).toBe(1);
+  });
+});
+
+describe('menu and operator name', () => {
+  it('menu leaves the run and ignores input until a new game starts', () => {
+    const h = harness();
+    h.begin('2');
+    h.game.handleInput('menu');
+    expect(h.game.state).toBe('IDLE');
+    expect(h.out[h.out.length - 1]).toEqual({ type: 'menu' });
+    expect(h.game.timerRunning).toBe(false);
+    expect(h.game.remainingSeconds()).toBeNull();
+    const mark = h.out.length;
+    h.game.handleInput('status');
+    expect(h.out.length).toBe(mark);
+    h.begin('2');
+    expect(h.game.state).toBe('STAGE');
+  });
+
+  it('victory and lockout screens offer the main menu', () => {
+    const h = harness();
+    h.begin('1');
+    h.advance(61);
+    const labels = h.out.flatMap((o) => (o.type === 'buttons' ? o.buttons.map((b) => b.action.type) : []));
+    expect(labels).toEqual(['new-game', 'menu']);
+    h.game.action({ type: 'menu' });
+    expect(h.game.state).toBe('IDLE');
+  });
+
+  it('remembers the last code name and offers it at the name prompt', () => {
+    const h = harness();
+    h.begin('1', 'Trinity');
+    h.game.start();
+    const prompt = h.out.filter((o) => o.type === "prompt").slice(-1)[0];
+    expect(prompt).toMatchObject({ label: 'AUTH:IDENT >', prefill: 'Trinity' });
   });
 });
 

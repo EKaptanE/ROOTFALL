@@ -1,4 +1,4 @@
-# ROOTFALL — Game Specification (v0.1)
+# ROOTFALL — Game Specification (v0.2)
 
 This spec describes the game independently of any platform. The app in `src/` implements it. `reference/index.html` is the older v7.0 and differs where this spec says **(app)**. Player-facing text is **Turkish**. The quoted strings below come from the reference; reuse them.
 
@@ -8,6 +8,7 @@ This spec describes the game independently of any platform. The app in `src/` im
 The player is a hacker in a terminal. They pick a difficulty, then solve **3 questions** ("security layers") against a countdown. Each solved question gives a **key word**. At the end the player types the **Master Key** `KEY1-KEY2-KEY3` to win. The fastest times go on a local leaderboard, with one board per difficulty.
 
 ## 2. Flow / state machine
+The app opens on the **main menu** (§14). `SIZMAYA BAŞLA` starts the flow below; `menu` or the `☰ MENÜ` button returns to the menu (state `IDLE`, input ignored).
 ```
 INIT_TYPING ─► AWAIT_NAME ─► AWAIT_DIFFICULTY ─► STAGE (×3) ─► MASTER_KEY ─► VICTORY
                                                    │              │
@@ -16,14 +17,14 @@ INIT_TYPING ─► AWAIT_NAME ─► AWAIT_DIFFICULTY ─► STAGE (×3) ─► 
 | State | What happens | Prompt label |
 |---|---|---|
 | INIT_TYPING | Boot text types out like a typewriter. Pressing Enter skips the animation; that input is not echoed or used. | `AUTH:IDENT >` |
-| AWAIT_NAME | The player enters a code name of at least 2 characters. | `AUTH:IDENT >` |
+| AWAIT_NAME | The player enters a code name of at least 2 characters. The last used name is remembered (`rootfall_operator`) and prefilled. | `AUTH:IDENT >` |
 | AWAIT_DIFFICULTY | Shows `1 KOLAY (60 s) / 2 ORTA (75 s) / 3 ZOR (90 s)`. Accepted inputs: `1/2/3`, `kolay/orta/zor`, `easy/medium/hard`, `e/m/h`. Any other input shows an error and the menu stays. | `ZORLUK >` |
 | STAGE i (1..3) | Shows the question. A correct answer gives key i and moves to the next stage. | `STAGE i >` |
 | MASTER_KEY | Shows the keys. The player types the master key. | `MASTER KEY >` (red) |
 | VICTORY | Shows the certificate card and that difficulty's Top 5. Buttons: new game and clear leaderboard. | `SUCCESS >` |
 | FAILED | Shows the dramatic lockout screen and a retry button. | `LOCKOUT >` (red) |
 
-The timer starts when the player picks a difficulty. Before that the badge shows `[--:--]`.
+The countdown is set when the player picks a difficulty but only **starts running once the first question is fully written** (§3a). Before a run the badge shows `[--:--]`.
 
 Boot lines:
 `[!] ROOTFALL MAINFRAME LOCKOUT DETECTED.` / `[!] LEVEL 0 CLEARANCE RESTRICTION ACTIVE.` / `3 güvenlik katmanını kır, Master Key'i gir, sistemi ele geçir.` / `OPERATÖR KOD ADINI GİR:`
@@ -43,6 +44,15 @@ Boot lines:
 - **(app) The timer follows the real clock.** The run has a deadline; time left is `deadline − now`, so a window in the background loses no accuracy. Penalties move the deadline. The badge shows whole seconds, rounded up.
 - **(app)** If a penalty jumps past one or more alert thresholds, only the strongest newly reached alert fires, once.
 - The difficulty order or any "hard/easy" label per question is **never shown**. Only the chosen difficulty appears in `status` and on the victory card.
+
+## 3a. The clock stops while the game writes (v0.2)
+New game text is written out line by line (a "scene"). While a scene is being written the clock is **held**, and held time does not count toward the score.
+- Scenes: the run intro plus the first question; a correct answer plus the granted key plus the next question (or the Master Key screen); a skip plus the key plus the next question; the lockout screen.
+- **Not** scenes, so the clock keeps running: output of commands the player types (`help`, `status`, `clear`, `hint`, `leaderboard`), wrong-answer feedback and timer alerts. Otherwise typing `clear` repeatedly would buy thinking time.
+- While a scene is being written the input is locked and no input counts. Enter finishes the writing at once and sends nothing.
+- Speed: about 11 ms per character, at most 0.36 s per line, 55 ms between lines; a question takes roughly 1.5 to 2.5 s. The boot text types at 20 ms per character. With `EFEKT: AZ` everything appears at once.
+- The timer badge is dimmed with a dashed border while the clock is held.
+- Engine contract: the engine emits `scene-start` … `scene-end`; the UI calls `game.sceneDone()` when the text is on screen.
 
 ## 4. Building a run
 1. Pick **3 distinct categories** at random from the 6. The set (order ignored) must differ from the previous run's set.
@@ -69,9 +79,10 @@ Stage screen layout: a `====` banner with `[*] AŞAMA i/3: <icon> <TITLE>`, then
 ## 6. Hint → Skip
 - `hint` prints `💡 İPUCU: <hint>`. The **first** hint on a question also shows a skip option: text plus a **⏭ [SORUYU ATLA // -X SN]** button.
 - `skip` (or the button) only works after `hint` has been used on the **current** question. Otherwise it shows `ATLAMA KİLİTLİ: Önce hint ...` and an error buzz.
+- **(v0.2) One skip per run** (`limits.skipsPerRun` in the content file). After it is used, `hint` no longer offers the skip, `skip` answers `ATLAMA HAKKI BİTTİ: ...`, and the stage info line says the skip is used.
 - A skip costs `skipCost` seconds, plays the penalty siren and shows `[⏭] SORU ATLANDI: -X SANİYE BYPASS BEDELİ ÖDENDİ.`. The player **still gets the key** and moves on. If time reaches 0, the game goes to FAILED.
 - The lock resets on every new question. A skip button left over from an earlier question must do nothing.
-- Count the skips and show `ATLANAN SORU: n / 3` on the victory card.
+- Count the skips and show `ATLANAN SORU: n / 1` on the victory card. A run with a skip is told it ranks below runs without one (§10).
 
 ## 7. Master Key
 - After stage 3: `[!] TÜM GÜVENLİK DUVARLARI AŞILDI // SON KİLİT DEVREDE` banner, the instructions, `🔑 TOPLANAN ANAHTARLAR:`, then `  1: [K1]`, `  2: [K2]`, `  3: [K3]` on separate lines, then `👉 GİRİŞ FORMATI: 1.ANAHTAR-2.ANAHTAR-3.ANAHTAR (Örn: ABC-DEF-GHI)` and the −5 s warning.
@@ -99,8 +110,8 @@ A `⚡ [YENİDEN DENE // SİSTEME TEKRAR SIZ]` button or `retry` restarts with *
 ## 10. Leaderboard
 - Stored locally under key `rootfall_lb` as an array of `{ name, timeUsed, key, diff, date }`. Keep at most 150 entries. Entries without `diff` count as ORTA.
 - **(app)** `timeUsed` is seconds with one decimal; `date` is the full local date and time (`12.11.2026 21:57`).
-- One board per difficulty, sorted by `timeUsed` ascending. Show the Top 5 with 🥇🥈🥉. Empty board: `Henüz kayıtlı bir rekor yok. İlk kıran sen ol!`
-- Clearing is available from a header button, the victory screen and `reset-board`. It **always asks for confirmation** first: `Liderlik tablosundaki tüm skorlar kalıcı olarak silinecektir. Emin misiniz?` **(app)** The confirmation is an in-app dialog (`[VAZGEÇ]` / `[EVET, SİL]`, Esc cancels), not a browser popup.
+- One board per difficulty. **(v0.2) Ranking: fewer skips first, then `timeUsed` ascending**, so a run without skips always beats a run with a skip. Entries store `skips`; older entries count as 0. Skipped runs show `⏭n` next to the time. Show the Top 5 with 🥇🥈🥉. Empty board: `Henüz kayıtlı bir rekor yok. İlk kıran sen ol!`
+- Clearing is available from the menu's settings, the victory screen and `reset-board`. It **always asks for confirmation** first: `Liderlik tablosundaki tüm skorlar kalıcı olarak silinecektir. Emin misiniz?` **(app)** The confirmation is an in-app dialog (`[VAZGEÇ]` / `[EVET, SİL]`, Esc cancels), not a browser popup.
 
 ## 11. Commands (available in every state unless noted)
 | Command | Effect |
@@ -113,6 +124,7 @@ A `⚡ [YENİDEN DENE // SİSTEME TEKRAR SIZ]` button or `retry` restarts with *
 | `reset-board` | Clears the leaderboard, with confirmation |
 | `clear` / `cls` | Clears the screen and re-renders the current question (hint/skip state is kept). **(app)** In MASTER_KEY it lists the keys and the format again. |
 | `reset` / `restart` / `retry` | New game |
+| `menu` / `menü` | Back to the main menu; a run in progress is abandoned |
 
 Input history: ArrowUp and ArrowDown cycle through previous inputs. A click anywhere (except on a button) focuses the input.
 
@@ -126,7 +138,7 @@ The reference generates every sound with the Web Audio API. Match the feel in th
 - **Timer warning:** two-tone 660→880 Hz sonar.
 - **Tick pulse:** heartbeat during the last 20%.
 
-A header toggle switches sound on and off (`🔊 SES: AÇIK` / `🔇 SES: KAPALI`). Audio starts on the first user gesture. **(app)** The choice is remembered (`rootfall_settings`).
+The menu's settings switch sound on and off (`🔊 AÇIK` / `🔇 KAPALI`). Audio starts on the first user gesture. **(app)** The choice is remembered (`rootfall_settings`).
 
 ## 13. Visual style (app)
 A calm dark terminal in a monospace font (JetBrains Mono, bundled). It should read as a hacker terminal without tiring the eyes: one accent color, amber as the second voice, red only for errors and alarms.
@@ -144,8 +156,15 @@ A calm dark terminal in a monospace font (JetBrains Mono, bundled). It should re
 
 The engine names colors by meaning (`accent`, `info`, `ok`, ...); only `src/styles.css` knows the values.
 
-- Header: ⚡ `ROOTFALL v0.1`, a `BREACH UNIT` tag, the sound toggle, the effects toggle, the clear-leaderboard button and the timer badge `[mm:ss]`.
+- Game header: ⚡ `ROOTFALL v0.2`, a `BREACH UNIT` tag, a `☰ MENÜ` button (asks for confirmation if a run is in progress) and the timer badge `[mm:ss]`. Sound, effects and clear-leaderboard live in the menu's settings.
 - Banners use drawn rules (double line for stage and alarm banners, dashed for separators) instead of rows of `=` characters, so nothing wraps on narrow windows.
 - Code snippets, the victory card and the leaderboards are quiet boxes on the surface color.
-- **Effects toggle** (`✨ EFEKT: TAM` / `◌ EFEKT: AZ`, remembered): TAM adds a soft text glow, faint scanlines and vignette, a short screen shake on errors and penalties, a green flash on victory and a red flash on failure. AZ turns all of that off. It starts as AZ when the system asks for reduced motion.
+- **Effects setting** (`✨ TAM` / `◌ AZ`, remembered): TAM adds the writing animation, a soft text glow, faint scanlines and vignette, a short screen shake on errors and penalties, a green flash on victory and a red flash on failure. AZ turns all of that off. It starts as AZ when the system asks for reduced motion.
 - Layout must work on a phone-sized window.
+
+## 14. Main menu (v0.2)
+The first screen. It is navigation only; rules stay in the engine.
+- Wordmark `ROOTFALL_`, `// BREACH UNIT · v0.2`, tagline `3 güvenlik katmanı. 1 Master Key. Süre aleyhine işliyor.`
+- Items: `[1] SIZMAYA BAŞLA` (free play), `[2] GÜNLÜK SIZMA` (disabled, `YAKINDA`), `[3] LİDERLİK TABLOSU` (all three boards), `[4] NASIL OYNANIR` (rules and commands; the numbers come from the content file), `[5] AYARLAR` (sound, effects, clear leaderboard with confirmation), `[6] ÇIKIŞ` (closes the app; in a plain browser it only says to close the tab).
+- Keyboard: ↑↓ move, Enter selects, 1 to 6 jump, Esc or Backspace goes back. The footer shows the last operator name.
+- The victory and lockout screens have a `☰ [ANA MENÜ]` button next to play-again.

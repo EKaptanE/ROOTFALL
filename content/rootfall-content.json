@@ -1,11 +1,12 @@
 {
   "schemaVersion": 2,
-  "source": "ROOTFALL v0.1 (this file is the source of truth; originally exported from reference/index.html v7.0)",
+  "source": "ROOTFALL v0.2 (this file is the source of truth; originally exported from reference/index.html v7.0)",
   "notes": {
     "answers": "Accepted answers. Compare after normalizing: uppercase, strip whitespace and quotes (' \" `).",
     "difficulties": "time = total seconds per run; skipCost = seconds lost when skipping a question (unlocked after hint).",
     "timerAlerts": "Alerts at 60% / 40% / 20% of total time remaining; heartbeat tick during the last 20%.",
-    "penalties": "wrongAnswer = seconds lost per wrong stage answer; masterKey = seconds lost per wrong master key."
+    "penalties": "wrongAnswer = seconds lost per wrong stage answer; masterKey = seconds lost per wrong master key.",
+    "limits": "skipsPerRun = how many questions may be skipped in one run."
   },
   "difficulties": {
     "KOLAY": {
@@ -24,6 +25,9 @@
   "penalties": {
     "wrongAnswer": 3,
     "masterKey": 5
+  },
+  "limits": {
+    "skipsPerRun": 1
   },
   "keyWords": [
     "ZERO",

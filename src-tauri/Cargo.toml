@@ -1,6 +1,6 @@
 [package]
 name = "rootfall"
-version = "0.1.0"
+version = "0.2.0"
 description = "ROOTFALL - hacker terminal puzzle game"
 edition = "2021"
 

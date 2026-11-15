@@ -37,6 +37,10 @@ This file records how the game got to its current shape. Each entry is a piece o
 
 17. **Version numbers restart with the app.** The HTML prototypes were numbered up to v7.0. The desktop app's first public release is **v0.1** (GitHub, for a competition entry); entries above marked "App" describe it.
 
+18. **v0.2: the clock stops while the game writes.** The owner did not want time to run while new text appears, and wanted questions written out a little slower. Now each new screen the game writes is a scene with the clock held; the countdown starts when the first question is fully written. Commands and wrong answers never hold the clock, so nobody can farm thinking time with `clear`.
+19. **v0.2: one skip per run, and skipped runs rank lower.** A fast typist could skip all three questions and still post a time. The owner offered two fixes; both were adopted: one skip per run, and the leaderboard ranks runs without skips above runs with a skip.
+20. **v0.2: main menu.** The owner plans to grow the game, so the app now opens on a menu: play, daily run (placeholder), leaderboard, how to play, settings. Sound and effects moved from the game header into settings. The last code name is remembered. The owner then asked for a sixth item, `ÇIKIŞ`, which closes the app.
+
 ## Agreed direction (not built yet)
 The owner was unsure between "a game that keeps growing" and "a Duolingo-like daily app". The agreed middle path, in this order:
 1. **Question generators.** Number systems, logic gates, Caesar/Atbash, chmod and subnet questions can be generated from random values with computed answers, so the pool does not run out. C/C++ and Linux-command questions stay hand-written. The no-leak and no-echo rules apply to generated questions too.

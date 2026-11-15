@@ -30,6 +30,7 @@ export function loadContent(raw: any): Content {
       wrongAnswer: raw.penalties?.wrongAnswer ?? 3,
       masterKey: raw.penalties?.masterKey ?? 5,
     },
+    skipsPerRun: raw.limits?.skipsPerRun ?? 1,
     keyWords: raw.keyWords,
     categories,
   };

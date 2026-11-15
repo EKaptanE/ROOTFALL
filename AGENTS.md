@@ -1,6 +1,6 @@
 # ROOTFALL — Agent Briefing
 
-You are taking over **ROOTFALL**, a hacker-terminal puzzle game. It started as a single offline HTML file (`reference/index.html`, v7.0) and is now a **Tauri desktop app** (v0.1): a TypeScript engine in `src/engine`, a thin UI in `src/`, and a Rust shell in `src-tauri`. Keep the gameplay that has been tuned through many iterations with the owner.
+You are taking over **ROOTFALL**, a hacker-terminal puzzle game. It started as a single offline HTML file (`reference/index.html`, v7.0) and is now a **Tauri desktop app** (v0.2): a TypeScript engine in `src/engine`, a thin UI in `src/`, and a Rust shell in `src-tauri`. Keep the gameplay that has been tuned through many iterations with the owner.
 
 Read these in order:
 1. `docs/GAME_SPEC.md` — the complete, platform-neutral behavior spec. This is the source of truth.
@@ -21,12 +21,16 @@ Read these in order:
 - **Players build the Master Key themselves:** show the keys one per line (`1: [KEY]`), give only the abstract format `1.ANAHTAR-2.ANAHTAR-3.ANAHTAR (Örn: ABC-DEF-GHI)`, and never show the real joined answer.
 - **Destructive actions need confirmation** (e.g. clearing the leaderboard).
 - **Retries must not repeat** the previous run's questions or category set.
+- **Time must not run while the game is writing new text**, and no input may count during that time.
+- **A run with a skip never outranks a run without one.**
 - Everything that worked offline should still work offline (no backend required for core play).
 
 ## Architecture
 - `src/engine/` is pure logic: no DOM, no timers of its own. It receives a clock (`now`), randomness (`rng`), a key-value store and an `emit` callback, and it emits plain data (`Out` in `types.ts`): lines with semantic colors, sounds, buttons, the victory card. **Game rules and player-facing text live here.**
 - `src/main.ts` renders that output, plays sounds (`src/ui/audio.ts`) and feeds input back. `src/styles.css` holds the theme. No game rules in the UI.
-- `src-tauri/` only opens the window. The game works in a plain browser too (`npm run dev`), which is the fastest way to try changes.
+- `src/ui/menu.ts` is the main menu (navigation, how-to-play, settings). It reads numbers from the content file instead of repeating them.
+- **Scenes:** text the game writes on its own is wrapped in `scene()` in the engine; the clock is held until the UI calls `game.sceneDone()`. Never wrap output of a player-typed command in a scene (see GAME_SPEC §3a).
+- `src-tauri/` only opens the window and exposes one command, `quit`, for the menu's exit item. The game works in a plain browser too (`npm run dev`), which is the fastest way to try changes.
 - Mobile is a far-future maybe; `src-tauri/src/lib.rs` already uses the mobile entry point so it stays possible.
 
 ## Commands

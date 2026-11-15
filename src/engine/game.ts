@@ -3,7 +3,7 @@
 // `now` (clock) and `rng` (randomness), so it runs in tests without any rendering.
 
 import { checkMasterKey, foldTurkishI, formatClock, formatSeconds, isCorrectAnswer, normalizeCommand } from './answers';
-import { formatDate, getLeaderboard, resetLeaderboard, saveScore } from './leaderboard';
+import { formatDate, getLastOperator, getLeaderboard, resetLeaderboard, saveLastOperator, saveScore } from './leaderboard';
 import { buildRun, EMPTY_LAST_RUN, type LastRun, type Stage } from './run';
 import {
   DIFFICULTIES,
@@ -20,6 +20,7 @@ import {
 } from './types';
 
 export type GameState =
+  | 'IDLE'
   | 'INIT_TYPING'
   | 'AWAIT_NAME'
   | 'AWAIT_DIFFICULTY'
@@ -28,7 +29,7 @@ export type GameState =
   | 'VICTORY'
   | 'FAILED';
 
-export const VERSION = '0.1';
+export const VERSION = '0.2';
 
 export const DIFFICULTY_TONE: Record<Difficulty, Tone> = { KOLAY: 'ok', ORTA: 'warn', ZOR: 'danger' };
 
@@ -60,7 +61,7 @@ export class Game {
   private readonly now: () => number;
   private readonly rng: () => number;
 
-  private _state: GameState = 'INIT_TYPING';
+  private _state: GameState = 'IDLE';
   private operatorName = '';
   private _difficulty: Difficulty | null = null;
   private totalMs = 0;
@@ -79,6 +80,11 @@ export class Game {
   private runId = 0;
   private promptLabel = 'AUTH:IDENT >';
   private confirmPending = false;
+  /** Clock time at which the clock was stopped for a scene; null while it runs. */
+  private holdStart: number | null = null;
+  private sceneDepth = 0;
+  /** Scenes emitted but not yet reported as written by the UI. */
+  private openScenes = 0;
 
   constructor(deps: GameDeps) {
     this.content = deps.content;
@@ -98,7 +104,7 @@ export class Game {
 
   /** Milliseconds left, or null when no run has started. */
   remainingMs(): number | null {
-    if (this.deadline !== null) return Math.max(0, this.deadline - this.now());
+    if (this.deadline !== null) return Math.max(0, this.deadline - this.clockNow());
     return this.frozenMs;
   }
 
@@ -109,6 +115,12 @@ export class Game {
   }
 
   get timerRunning(): boolean { return this.deadline !== null; }
+
+  /** True while the clock is stopped because new game text is still being written out. */
+  get clockHeld(): boolean { return this.holdStart !== null; }
+
+  /** How many skips are left in this run. */
+  get skipsLeft(): number { return Math.max(0, this.content.skipsPerRun - this.skipCount); }
 
   /** True during the last 20% of a running timer. */
   get urgent(): boolean {
@@ -126,12 +138,52 @@ export class Game {
   private sound(name: SoundName): void { this.emit({ type: 'sound', name }); }
   private errorBuzz(): void { this.sound('error'); this.emit({ type: 'shake' }); }
   private siren(): void { this.sound('siren'); this.emit({ type: 'shake' }); }
-  private setPrompt(label: string, placeholder: string, danger = false): void {
+  private setPrompt(label: string, placeholder: string, danger = false, prefill?: string): void {
     this.promptLabel = label;
-    this.emit({ type: 'prompt', label, danger, placeholder });
+    this.emit({ type: 'prompt', label, danger, placeholder, prefill });
   }
   private cfg() { return this.content.difficulties[this._difficulty ?? 'ORTA']; }
   private alertAt(fraction: number): number { return Math.round((this.totalMs / 1000) * fraction); }
+
+  // ---- scenes: new game text stops the clock until it is fully written -------------------
+
+  /** The time the clock sees: frozen at holdStart while a scene is being written. */
+  private clockNow(): number { return this.holdStart ?? this.now(); }
+
+  private holdClock(): void {
+    if (this.deadline !== null && this.holdStart === null) this.holdStart = this.now();
+  }
+
+  /**
+   * Wraps output the game writes on its own (a new question, a granted key, the master key
+   * screen). The clock stops at the start and resumes when the UI reports sceneDone().
+   * Output the player asks for (help, status, clear, hint) and wrong-answer feedback is never
+   * a scene, so nobody can buy thinking time by typing commands.
+   */
+  private scene(fn: () => void): void {
+    const outer = this.sceneDepth === 0;
+    if (outer) {
+      this.openScenes++;
+      this.holdClock();
+      this.emit({ type: 'scene-start' });
+    }
+    this.sceneDepth++;
+    try {
+      fn();
+    } finally {
+      this.sceneDepth--;
+      if (outer) this.emit({ type: 'scene-end' });
+    }
+  }
+
+  /** The UI calls this when it has finished writing a scene. Restarts the clock. */
+  sceneDone(): void {
+    if (this.openScenes === 0) return;
+    this.openScenes--;
+    if (this.openScenes > 0) return;
+    if (this.holdStart !== null && this.deadline !== null) this.deadline += this.now() - this.holdStart;
+    this.holdStart = null;
+  }
 
   // ---- boot -----------------------------------------------------------------------------
 
@@ -140,12 +192,15 @@ export class Game {
     this._state = 'INIT_TYPING';
     this.deadline = null;
     this.frozenMs = null;
+    this.holdStart = null;
+    this.openScenes = 0;
+    this.sceneDepth = 0;
     this._keys = [];
     this._stages = [];
     this.stageIndex = 0;
     this._difficulty = null;
     this.emit({ type: 'clear' });
-    this.setPrompt('AUTH:IDENT >', "Operatör kod adını yazıp Enter'a bas...");
+    this.setPrompt('AUTH:IDENT >', "Operatör kod adını yazıp Enter'a bas...", false, getLastOperator(this.store));
     const bootLines: Line[] = [
       { spans: [s('[!] ROOTFALL MAINFRAME LOCKOUT DETECTED.')], tone: 'danger', bold: true, glow: true },
       { spans: [s('[!] LEVEL 0 CLEARANCE RESTRICTION ACTIVE.')], tone: 'warn', bold: true, glow: true },
@@ -166,7 +221,7 @@ export class Game {
   /** Call regularly (the UI does so several times a second). Fires alerts, heartbeat and timeout. */
   tick(): void {
     if (this.deadline === null) return;
-    const ms = this.deadline - this.now();
+    const ms = this.deadline - this.clockNow();
     if (ms <= 0) {
       this.fail();
       return;
@@ -229,14 +284,17 @@ export class Game {
     const run = buildRun(this.content, diff, this.lastRun, this.rng);
     this._stages = run.stages;
     this.lastRun = run.last;
-    this.line([s('[+] ZORLUK: '), s(diff, DIFFICULTY_TONE[diff], true)], 'info');
-    this.line(`[+] ${this.totalMs / 1000} SANİYELİK GERİ SAYIM BAŞLATILDI!`, 'accent', { bold: true, glow: true });
-    this.line('[+] KÖK ERİŞİM PROTOKOLÜNE GEÇİLİYOR...', 'dim');
     this.deadline = this.now() + this.totalMs;
     this.frozenMs = null;
     this.alertsFired = 0;
     this.lastBeatSecond = -1;
-    this.launchStage(0);
+    // The countdown only starts running once the first question is fully on screen.
+    this.scene(() => {
+      this.line([s('[+] ZORLUK: '), s(diff, DIFFICULTY_TONE[diff], true)], 'info');
+      this.line(`[+] ${this.totalMs / 1000} SANİYELİK GERİ SAYIM: İLK SORU YAZILINCA BAŞLAR!`, 'accent', { bold: true, glow: true });
+      this.line('[+] KÖK ERİŞİM PROTOKOLÜNE GEÇİLİYOR...', 'dim');
+      this.launchStage(0);
+    });
   }
 
   private launchStage(i: number): void {
@@ -254,18 +312,20 @@ export class Game {
     (q.guide ?? []).forEach((text, n) => this.line(text, n === 0 ? 'warn' : 'info', { bold: n === 0 }));
     if (q.code) this.emit({ type: 'code', lang: q.lang ?? 'C', lines: q.code });
     this.line([s('Görev: '), s(q.text, 'alert', true)]);
-    this.line(
-      `(Yanlış cevap -${this.content.penalties.wrongAnswer} sn. İpucu için 'hint' — ipucundan sonra 'skip' ile -${this.cfg().skipCost} sn karşılığında atlayabilirsin)`,
-      'dim',
-    );
+    const skipNote = this.skipsLeft
+      ? `ipucundan sonra 'skip' ile -${this.cfg().skipCost} sn karşılığında atlayabilirsin, koşu başına ${this.content.skipsPerRun} hak`
+      : 'atlama hakkını kullandın';
+    this.line(`(Yanlış cevap -${this.content.penalties.wrongAnswer} sn. İpucu için 'hint' — ${skipNote})`, 'dim');
   }
 
   private checkStage(input: string): void {
     const stage = this._stages[this.stageIndex];
     if (isCorrectAnswer(input, stage.q.answers)) {
       this.sound('stageClear');
-      this.line(`[+] DOĞRU! ${stage.cat.title} katmanı aşıldı.`, 'ok', { bold: true, glow: true });
-      this.grantKeyAndAdvance();
+      this.scene(() => {
+        this.line(`[+] DOĞRU! ${stage.cat.title} katmanı aşıldı.`, 'ok', { bold: true, glow: true });
+        this.grantKeyAndAdvance();
+      });
       return;
     }
     const cost = this.content.penalties.wrongAnswer;
@@ -343,12 +403,20 @@ export class Game {
       this.line([s('[!] ATLAMA KİLİTLİ: Önce '), s('hint', 'accent', true), s(' yazıp ipucunu almalısın.')], 'warn', { bold: true });
       return;
     }
+    if (!this.skipsLeft) {
+      this.errorBuzz();
+      this.line(`[!] ATLAMA HAKKI BİTTİ: Her koşuda yalnızca ${this.content.skipsPerRun} soru atlanabilir.`, 'warn', { bold: true });
+      return;
+    }
     const cost = this.cfg().skipCost;
     this.skipCount++;
     this.siren();
-    this.line(`[⏭] SORU ATLANDI: -${cost} SANİYE BYPASS BEDELİ ÖDENDİ.`, 'alert', { bold: true, glow: true });
-    if (this.penalize(cost)) return;
-    this.grantKeyAndAdvance();
+    this.scene(() => {
+      this.line(`[⏭] SORU ATLANDI: -${cost} SANİYE BYPASS BEDELİ ÖDENDİ.`, 'alert', { bold: true, glow: true });
+      this.line('[i] Atlama kullanılan koşular liderlik tablosunda atlamasız koşuların altında sıralanır.', 'dim');
+      if (this.penalize(cost)) return;
+      this.grantKeyAndAdvance();
+    });
   }
 
   private giveHint(): void {
@@ -356,6 +424,10 @@ export class Game {
       this.line(`💡 İPUCU: ${this._stages[this.stageIndex].q.hint}`, 'warn');
       if (!this.hintUsed) {
         this.hintUsed = true;
+        if (!this.skipsLeft) {
+          this.line('Atlama hakkını bu koşuda kullandın; bu soruyu çözmen gerekiyor.', 'dim');
+          return;
+        }
         this.emit({
           type: 'buttons',
           note: [s('Hâlâ takıldıysan: ', 'dim'), s('skip', 'alert', true), s(' yaz veya', 'dim')],
@@ -390,7 +462,7 @@ export class Game {
     const hex = Math.floor(this.rng() * 0x10000).toString(16).toUpperCase().padStart(4, '0');
     const masterKey = `${this._keys.join('-')}-${hex}`;
     const timeUsed = Math.round((this.totalMs - remaining) / 100) / 10;
-    saveScore(this.store, { name: this.operatorName, timeUsed, key: masterKey, diff, date: formatDate(this.now()) });
+    saveScore(this.store, { name: this.operatorName, timeUsed, key: masterKey, skips: this.skipCount, diff, date: formatDate(this.now()) });
 
     this.line('');
     this.emit({
@@ -400,13 +472,16 @@ export class Game {
         { label: 'YETKİLİ OPERATÖR', value: s(this.operatorName, 'text', true, true) },
         { label: 'GÜVENLİK MASTER KEY', value: s(masterKey, 'danger', true, true) },
         { label: 'ZORLUK', value: s(diff, DIFFICULTY_TONE[diff], true) },
-        { label: 'ATLANAN SORU', value: s(`${this.skipCount} / 3`, this.skipCount ? 'alert' : 'ok', true) },
+        { label: 'ATLANAN SORU', value: s(`${this.skipCount} / ${this.content.skipsPerRun}`, this.skipCount ? 'alert' : 'ok', true) },
         { label: 'TAMAMLANMA SÜRESİ', value: s(`${formatSeconds(timeUsed)} Saniye`, 'warn', true, true) },
         { label: 'DURUM', value: s('TAM ERİŞİM ONAYLANDI (SYSTEM BREACHED)', 'ok', true, true) },
       ],
       body: [
         { spans: [s('🎉 '), s('TEBRİKLER! GÜVENLİK SİSTEMİNİ ÇÖKERTTİN.', 'warn', true, true)] },
         { spans: [s('🏆 '), s('Derecen yerel liderlik tablosuna kaydedildi.', 'text', true)] },
+        ...(this.skipCount
+          ? [{ spans: [s('⏭ Atlama kullandığın için atlamasız koşuların altında sıralandın.', 'alert')] } as Line]
+          : []),
         {
           spans: [
             s('📸 Ekran görüntüsünü al, süreni paylaş ve arkadaşlarını '),
@@ -421,6 +496,7 @@ export class Game {
       type: 'buttons',
       buttons: [
         { label: '🔄 [YENİ OPERATÖR // TEKRAR OYNA]', tone: 'accent', action: { type: 'new-game' } },
+        { label: '☰ [ANA MENÜ]', tone: 'info', action: { type: 'menu' } },
         { label: '🗑️ [TABLOYU SIFIRLA]', tone: 'warn', action: { type: 'reset-board' } },
       ],
     });
@@ -429,11 +505,15 @@ export class Game {
 
   private fail(): void {
     this.deadline = null;
+    this.holdStart = null;
     this.frozenMs = 0;
     this._state = 'FAILED';
     this.errorBuzz();
     this.emit({ type: 'flash', tone: 'danger' });
+    this.scene(() => this.failScreen());
+  }
 
+  private failScreen(): void {
     this.line('');
     this.rule(true, 'danger');
     this.line('[!] SÜRE DOLDU. SİSTEM KİLİTLENDİ. // BAĞLANTI KESİLDİ!', 'danger', { bold: true, glow: true });
@@ -448,7 +528,10 @@ export class Game {
     this.rule(false, 'dim');
     this.emit({
       type: 'buttons',
-      buttons: [{ label: '⚡ [YENİDEN DENE // SİSTEME TEKRAR SIZ]', tone: 'danger', action: { type: 'new-game' } }],
+      buttons: [
+        { label: '⚡ [YENİDEN DENE // SİSTEME TEKRAR SIZ]', tone: 'danger', action: { type: 'new-game' } },
+        { label: '☰ [ANA MENÜ]', tone: 'info', action: { type: 'menu' } },
+      ],
     });
     this.setPrompt('LOCKOUT >', "Sisteme tekrar sızmak için 'retry' yazınız veya butona tıklayınız...", true);
   }
@@ -492,14 +575,33 @@ export class Game {
       if (this._state === 'STAGE' && a.run === this.runId && a.stage === this.stageIndex) this.handleInput('skip');
     } else if (a.type === 'new-game') {
       this.start();
+    } else if (a.type === 'menu') {
+      this.exitToMenu();
     } else {
       this.requestBoardReset();
     }
   }
 
+  /** Abandons whatever is in progress and asks the UI for the main menu. */
+  exitToMenu(): void {
+    this._state = 'IDLE';
+    this.deadline = null;
+    this.frozenMs = null;
+    this.holdStart = null;
+    this.openScenes = 0;
+    this.emit({ type: 'menu' });
+  }
+
   handleInput(rawInput: string): void {
     const input = rawInput.trim();
-    if (!input) return;
+    if (!input || this._state === 'IDLE') return;
+
+    // While a scene is still being written the clock is stopped, so no input counts yet:
+    // Enter only finishes the animation.
+    if (this.openScenes > 0) {
+      this.emit({ type: 'reveal-skip' });
+      return;
+    }
 
     this.sound('key');
 
@@ -530,12 +632,13 @@ export class Game {
       this.line('[?] KULLANILABİLİR KOMUTLAR:', 'warn', { bold: true, glow: true });
       [
         '  hint        - Mevcut aşama için arkadaş canlısı bir ipucu verir',
-        "  skip        - (hint'ten sonra) soruyu atlar: KOLAY -10 / ORTA -15 / ZOR -20 sn",
+        `  skip        - (hint'ten sonra) soruyu atlar, koşu başına ${this.content.skipsPerRun} hak: KOLAY -10 / ORTA -15 / ZOR -20 sn`,
         '  status      - Operatör, süre ve toplanan anahtar durumunu gösterir',
         "  leaderboard - Her zorluk için en hızlı 5 rekoru listeler (veya 'top', 'skor')",
         '  reset-board - Liderlik tablosunu siler (onay ister)',
         '  clear       - Terminal ekranını temizler',
         '  reset       - Oyunu sıfırlar ve yeni operatör için başlatır',
+        '  menu        - Ana menüye döner (süren koşu iptal olur)',
       ].forEach((t) => this.line(t, 'info'));
       return;
     }
@@ -568,6 +671,11 @@ export class Game {
       return;
     }
 
+    if (lower === 'menu' || lower === 'menü') {
+      this.exitToMenu();
+      return;
+    }
+
     if (lower === 'skip' && this._state !== 'AWAIT_NAME') {
       this.skipStage();
       return;
@@ -580,6 +688,7 @@ export class Game {
         return;
       }
       this.operatorName = input;
+      saveLastOperator(this.store, input);
       this.line([s('[+] KİMLİK DOĞRULANDI: '), s(input.toLocaleUpperCase('tr-TR'), 'text', true)], 'ok', { bold: true, glow: true });
       this.askDifficulty();
       return;

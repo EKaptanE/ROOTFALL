@@ -3,7 +3,11 @@ import type { Difficulty, KeyValueStore, LeaderboardEntry } from './types';
 export const LEADERBOARD_STORAGE_KEY = 'rootfall_lb';
 const MAX_ENTRIES = 150;
 
-/** Sorted fastest first. Entries without a difficulty (pre-v7) count as ORTA. */
+/** Runs without skips rank above runs with skips; within the same skip count, fastest first. */
+const byRank = (a: LeaderboardEntry, b: LeaderboardEntry): number =>
+  (a.skips ?? 0) - (b.skips ?? 0) || a.timeUsed - b.timeUsed;
+
+/** Sorted best first. Entries without a difficulty (pre-v7) count as ORTA. */
 export function getLeaderboard(store: KeyValueStore, diff?: Difficulty): LeaderboardEntry[] {
   try {
     const list = JSON.parse(store.getItem(LEADERBOARD_STORAGE_KEY) || '[]');
@@ -11,7 +15,7 @@ export function getLeaderboard(store: KeyValueStore, diff?: Difficulty): Leaderb
       return list
         .filter((e) => e && typeof e.timeUsed === 'number' && typeof e.name === 'string')
         .filter((e) => !diff || (e.diff || 'ORTA') === diff)
-        .sort((a, b) => a.timeUsed - b.timeUsed);
+        .sort(byRank);
     }
   } catch {
     /* corrupt or unavailable storage: behave as empty */
@@ -23,10 +27,29 @@ export function saveScore(store: KeyValueStore, entry: LeaderboardEntry): void {
   try {
     const board = getLeaderboard(store);
     board.push({ ...entry, name: entry.name.trim() });
-    board.sort((a, b) => a.timeUsed - b.timeUsed);
+    board.sort(byRank);
     store.setItem(LEADERBOARD_STORAGE_KEY, JSON.stringify(board.slice(0, MAX_ENTRIES)));
   } catch {
     /* storage full or unavailable: the run still counts on screen */
+  }
+}
+
+export const OPERATOR_STORAGE_KEY = 'rootfall_operator';
+
+/** The code name used last time, to prefill the name prompt. */
+export function getLastOperator(store: KeyValueStore): string {
+  try {
+    return (store.getItem(OPERATOR_STORAGE_KEY) ?? '').slice(0, 40);
+  } catch {
+    return '';
+  }
+}
+
+export function saveLastOperator(store: KeyValueStore, name: string): void {
+  try {
+    store.setItem(OPERATOR_STORAGE_KEY, name);
+  } catch {
+    /* not remembered, nothing else changes */
   }
 }
 

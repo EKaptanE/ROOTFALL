@@ -27,12 +27,25 @@ export function memoryStore(): KeyValueStore & { data: Record<string, string> } 
   };
 }
 
-/** A game wired to a fake clock, an in-memory store and a captured output log. */
-export function harness(seed = 1) {
+/**
+ * A game wired to a fake clock, an in-memory store and a captured output log.
+ * Scenes are reported as written at once (as the UI does with effects off), unless
+ * `manualScenes` is set; then the test calls game.sceneDone() itself.
+ */
+export function harness(seed = 1, opts: { manualScenes?: boolean } = {}) {
   const out: Out[] = [];
   const clock = { ms: 1_000_000 };
   const store = memoryStore();
-  const game = new Game({ content, store, emit: (o) => out.push(o), now: () => clock.ms, rng: seededRng(seed) });
+  const game: Game = new Game({
+    content,
+    store,
+    emit: (o) => {
+      out.push(o);
+      if (o.type === 'scene-end' && !opts.manualScenes) game.sceneDone();
+    },
+    now: () => clock.ms,
+    rng: seededRng(seed),
+  });
   const text = (from = 0): string =>
     out
       .slice(from)
