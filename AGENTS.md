@@ -44,5 +44,13 @@ python3 reference/test_terminal.py   # checks of the frozen v7 reference
 ```
 Run `npm test` after every change to the engine or the content.
 
+## Releasing
+Releases are automatic (`.github/workflows/release.yml`). To publish a new version:
+1. Bump the version in `package.json`, `package-lock.json`, `src-tauri/Cargo.toml`, `src-tauri/Cargo.lock`, `src-tauri/tauri.conf.json` and `VERSION` in `src/engine/game.ts`.
+2. Add a `## vX.Y — date` section to `CHANGELOG.md` (the workflow fails without it; the section becomes the release text).
+3. Push to `main`. GitHub runs the tests, builds the Windows installer and publishes release `vX.Y` with the installer attached. If that release already exists, nothing happens.
+
+Tags drop a trailing `.0`: version `0.2.0` is released as `v0.2`. The owner can still build locally by double-clicking `surum-olustur.bat`.
+
 ## Next steps
 See "Agreed direction" in `docs/DECISIONS.md`: question generators, then the daily run, then streak and progress.

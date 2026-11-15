@@ -49,6 +49,8 @@ src/ui/menu.ts                 Main menu, how to play, settings
 src/ui/audio.ts                Synthesized sounds
 src-tauri/                     Desktop shell (Rust)
 tests/                         Engine and content tests
+.github/workflows/release.yml  Builds the installer and publishes a release when the version changes
+surum-olustur.bat              Double-click to build the installer locally (Windows)
 reference/                     Frozen v7.0 single-file version and its checks
 ```
 

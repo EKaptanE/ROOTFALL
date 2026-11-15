@@ -1,0 +1,72 @@
+# Builds the Windows installer and publishes a GitHub release for the version in package.json.
+# It runs when package.json changes on main (a version bump) and does nothing if that
+# version's release already exists. To release: bump the version in package.json,
+# src-tauri/Cargo.toml and src-tauri/tauri.conf.json, add a section to CHANGELOG.md, push.
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - package.json
+      - .github/workflows/release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Read version
+        id: v
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v${VERSION%.0}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; nothing to do."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install dependencies
+        if: steps.v.outputs.exists == 'false'
+        run: npm ci
+
+      - name: Test
+        if: steps.v.outputs.exists == 'false'
+        run: npm test
+
+      - name: Build installer
+        if: steps.v.outputs.exists == 'false'
+        run: npm run tauri build
+
+      - name: Publish release
+        if: steps.v.outputs.exists == 'false'
+        run: |
+          INSTALLER="src-tauri/target/release/bundle/nsis/ROOTFALL_${{ steps.v.outputs.version }}_x64-setup.exe"
+          node scripts/release-notes.mjs "${{ steps.v.outputs.version }}" "$INSTALLER" > release-notes.md
+          gh release create "${{ steps.v.outputs.tag }}" "$INSTALLER" \
+            --title "ROOTFALL ${{ steps.v.outputs.tag }}" \
+            --notes-file release-notes.md \
+            --target "$GITHUB_SHA"

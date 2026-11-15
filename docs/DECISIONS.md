@@ -41,6 +41,8 @@ This file records how the game got to its current shape. Each entry is a piece o
 19. **v0.2: one skip per run, and skipped runs rank lower.** A fast typist could skip all three questions and still post a time. The owner offered two fixes; both were adopted: one skip per run, and the leaderboard ranks runs without skips above runs with a skip.
 20. **v0.2: main menu.** The owner plans to grow the game, so the app now opens on a menu: play, daily run (placeholder), leaderboard, how to play, settings. Sound and effects moved from the game header into settings. The last code name is remembered. The owner then asked for a sixth item, `ÇIKIŞ`, which closes the app.
 
+21. **Automatic releases.** Publishing v0.1 by hand went wrong twice (the installer was missing, the tag was typed as `v.0.1`), and the owner asked for a permanent fix. A GitHub Actions workflow now builds the installer and publishes the release whenever a new version is pushed to `main`.
+
 ## Agreed direction (not built yet)
 The owner was unsure between "a game that keeps growing" and "a Duolingo-like daily app". The agreed middle path, in this order:
 1. **Question generators.** Number systems, logic gates, Caesar/Atbash, chmod and subnet questions can be generated from random values with computed answers, so the pool does not run out. C/C++ and Linux-command questions stay hand-written. The no-leak and no-echo rules apply to generated questions too.
